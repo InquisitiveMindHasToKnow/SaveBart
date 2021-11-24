@@ -2,7 +2,19 @@
     <string name="app_name">Save Bart</string>
     <string name="play_now_button_text">Play Now</string>
     <string name="game_rules_text">Instructions</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="guess_hint">_ _ _ _</string>
+    <string name="button_six_text">6</string>
+    <string name="button_zero_text">0</string>
+    <string name="button_one_text">1</string>
+    <string name="button_two_text">2</string>
+    <string name="button_three_text">3</string>
+    <string name="button_four_text">4</string>
+    <string name="button_five_text">5</string>
+    <string name="button_seven_text">7</string>
+    <string name="delete_button_text">Del</string>
+    <string name="guess_button_text">Guess</string>
+    <string name="reset_button_text">Reset</string>
+    <string name="reveal_button_text">Reveal</string>
 
 </resources>
