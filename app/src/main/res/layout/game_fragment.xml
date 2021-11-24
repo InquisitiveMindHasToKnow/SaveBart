@@ -1,14 +1,642 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.GameFragment">
+    tools:context=".fragments.LandingPageFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/colorPrimaryDark">
 
-</FrameLayout>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/bart_linear"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="#FFF"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            app:layout_constraintBottom_toTopOf="@id/guess_and_timer_relative"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/person_imageview"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/bart_sitting" />
+
+            <ImageView
+                android:id="@+id/brick_one_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_two_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_three_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_four_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_five_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_six_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_seven_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_eight_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_nine_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <ImageView
+                android:id="@+id/brick_ten_imageview"
+                android:layout_width="240dp"
+                android:layout_height="4dp"
+                android:src="@drawable/bricks" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/brick_eleven_imageview"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:src="@drawable/water" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <RelativeLayout
+            android:id="@+id/guess_and_timer_relative"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toTopOf="@id/numbers_selected_linear"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bart_linear">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:text="Guesses:"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/remaining_guess_count_textview"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:gravity="center"
+                    android:text="10"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/countdown_timer_linear"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:id="@+id/time_header_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Time:"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/countdown_timer_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:gravity="center"
+                    android:text="00:00"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/numbers_selected_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/rv_and_edittext_linear"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guess_and_timer_relative">
+
+            <TextView
+                android:id="@+id/first_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="0"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/second_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="1"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/third_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="2"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/fourth_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="3"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/fifth_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="4"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sixth_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="5"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/seventh_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="6"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/eighth_number_textview"
+                android:layout_width="32dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/numberDisplayTextViewColor"
+                android:gravity="center"
+                android:hint="7"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/rv_and_edittext_linear"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/user_entry_button_linear"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/numbers_selected_linear">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="180dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/previous_guesses_header_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="Previous Guesses"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/prev_guess_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    tools:listitem="@layout/previous_guesses_itemview" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/edit_text_and_combinnation"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/user_guess_edittext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:background="@color/entryEditTextColor"
+                        android:focusable="false"
+                        android:gravity="center"
+                        android:hint="@string/guess_hint"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/combination_linear"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:visibility="invisible">
+
+                        <TextView
+                            android:id="@+id/combo_header_textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="32dp"
+                            android:text="Combo:"
+                            android:textColor="@color/textColor"
+                            />
+
+
+                        <TextView
+                            android:id="@+id/combination_textview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="6 4 2 0"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="32dp"
+                            android:textColor="@color/textColor"
+                            />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <TextView
+                        android:id="@+id/feedback_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/dispay_hints_and_game_status_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textSize="12sp" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/user_entry_button_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_and_edittext_linear">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/entry_button_linear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/zero_one_two_three_linear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/zero_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_zero_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/one_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_one_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/two_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_two_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/three_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_three_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/four_five_six_seven_linear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/four_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_four_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/five_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_five_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/six_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_six_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/seven_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/button_seven_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/del_sound_guess_linear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/delete_button"
+                        android:layout_width="56dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="@string/delete_button_text"
+                        android:textAllCaps="false"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/hint_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:gravity="center"
+                        android:text="Hint"
+                        android:textAllCaps="false"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+
+                        android:id="@+id/reset_button"
+                        android:layout_width="80dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_button_corners"
+                        android:textAllCaps="false"
+                        android:text="@string/reset_button_text"
+                        android:textColor="@color/buttonTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+
+                    android:id="@+id/reveal_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_button_corners"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/reveal_button_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/buttonTextColor"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+
+                    android:id="@+id/guess_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rounded_button_corners"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/guess_button_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/buttonTextColor"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
