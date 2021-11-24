@@ -34,7 +34,7 @@
             app:layout_constraintBottom_toTopOf="@id/main_page_button_linear"
             app:layout_constraintTop_toBottomOf="@id/header_textview" />
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/main_page_button_linear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 android:textColor="@color/textColor"
                 android:textSize="16sp" />
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
