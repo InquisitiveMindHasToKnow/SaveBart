@@ -9,5 +9,14 @@
         android:id="@+id/landingPageFragment"
         android:name="org.ohmstheresistance.savebart.fragments.LandingPageFragment"
         android:label="landing_page_fragment"
-        tools:layout="@layout/landing_page_fragment" />
+        tools:layout="@layout/landing_page_fragment" >
+        <action
+            android:id="@+id/action_landingPageFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="org.ohmstheresistance.savebart.fragments.GameFragment"
+        android:label="game_fragment"
+        tools:layout="@layout/game_fragment" />
 </navigation>
