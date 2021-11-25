@@ -18,6 +18,8 @@ import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
 class GameFragment : Fragment(), View.OnClickListener {
 
     lateinit var gameFragmentBinding: GameFragmentBinding
+    lateinit var combination: String
+    var totalGuesses = 10
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,12 +62,12 @@ class GameFragment : Fragment(), View.OnClickListener {
             gameFragmentBinding.fiveButton.id -> gameFragmentBinding.userGuessEdittext.append("5")
             gameFragmentBinding.sixButton.id -> gameFragmentBinding.userGuessEdittext.append("6")
             gameFragmentBinding.sevenButton.id -> gameFragmentBinding.userGuessEdittext.append("7")
-            gameFragmentBinding.hintButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
             gameFragmentBinding.revealButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
             gameFragmentBinding.resetButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
             gameFragmentBinding.guessButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
 
             gameFragmentBinding.deleteButton.id -> deleteLastEntry()
+            gameFragmentBinding.hintButton.id -> displayHint()
         }
     }
 
@@ -109,7 +111,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     val thirdNumber = separatedResponse[2]
                     val fourthNumber = separatedResponse[3]
 
-                    val combination = firstNumber + secondNumber + thirdNumber + fourthNumber
+                     combination = firstNumber + secondNumber + thirdNumber + fourthNumber
 
 
 
@@ -154,7 +156,23 @@ class GameFragment : Fragment(), View.OnClickListener {
             gameFragmentBinding.userGuessEdittext.text.delete(guessLength - 1, guessLength)
         }
     }
-    private fun getHintToDisplay(){
+    private fun displayHint(){
+        val hints = listOf(
+            "There is no chance the number to guess is negative.",
+            "C'mon! The combination is 4 digits long.",
+            "At least one of the numbers above is in the combo.",
+            "You have $totalGuesses guesses remaining!",
+            "Haha! Not happening!",
+            "I could but where's the fun in that?",
+            "It's only 4 digits. You got this!",
+            "I would've solved it already.",
+            "Okay a " + combination[0] + " is included somewhere.",
+            "FINE! There's a " + combination[2] + " include somewhere.",
+            "You're running out of time!") .random()
 
+
+
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = hints
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
     }
 }
