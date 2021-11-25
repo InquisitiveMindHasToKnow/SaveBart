@@ -17,4 +17,13 @@
     <string name="reset_button_text">Reset</string>
     <string name="reveal_button_text">Reveal</string>
 
+    <string name="enter_four_digits"><font fgcolor="#EEDFD0">Please enter a 4 digit combination.</font></string>
+    <string name="enter_valid_entry"><font fgcolor="#EEDFD0">Please enter a valid entry.</font></string>
+    <string name="revealed_answer_feedback"><font fgcolor="#F44336">You revealed the correct answer manually.</font></string>
+
+    <string name="one_entry_correct"><font fgcolor="#F0810F">One number and its location correct.</font></string>
+    <string name="two_entries_correct"><font fgcolor="#F0810F">Two numbers and their locations correct.</font></string>
+    <string name="three_entries_correct"><font fgcolor="#F0810F">Three numbers and their locations correct.</font></string>
+
+    <string name="you_lost_text"><font fgcolor="#F44336">You lost! Poor Bart!</font></string>
 </resources>
