@@ -1,5 +1,6 @@
 package org.ohmstheresistance.savebart.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -63,9 +64,9 @@ class GameFragment : Fragment(), View.OnClickListener {
             gameFragmentBinding.sixButton.id -> gameFragmentBinding.userGuessEdittext.append("6")
             gameFragmentBinding.sevenButton.id -> gameFragmentBinding.userGuessEdittext.append("7")
             gameFragmentBinding.revealButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
-            gameFragmentBinding.resetButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
             gameFragmentBinding.guessButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
 
+            gameFragmentBinding.resetButton.id -> resetGame()
             gameFragmentBinding.deleteButton.id -> deleteLastEntry()
             gameFragmentBinding.hintButton.id -> displayHint()
         }
@@ -116,7 +117,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
 
                     val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
-                    listOf(numbers).shuffled()
+                    listOf(numbers).random()
 
                     val eightNumbersToDisplay = listOf(
                         numbers[6],
@@ -128,7 +129,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                         thirdNumber,
                         fourthNumber
                     )
-                    listOf(eightNumbersToDisplay).shuffled()
+                    listOf(eightNumbersToDisplay).random()
 
                     Handler(Looper.getMainLooper()).post {
 
@@ -168,11 +169,19 @@ class GameFragment : Fragment(), View.OnClickListener {
             "I would've solved it already.",
             "Okay a " + combination[0] + " is included somewhere.",
             "FINE! There's a " + combination[2] + " include somewhere.",
-            "You're running out of time!") .random()
-
-
+            "You're running out of time!").random()
 
         gameFragmentBinding.dispayHintsAndGameStatusTextview.text = hints
         gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
+    }
+
+    private fun resetGame(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            fragmentManager?.beginTransaction()?.detach(this)?.commitNow()
+            fragmentManager?.beginTransaction()?.attach(this)?.commitNow()
+        } else {
+            fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
+        }
+        gameFragmentBinding.userGuessEdittext.text.clear()
     }
 }
