@@ -9,7 +9,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.databinding.DataBindingUtil
 import okhttp3.*
 import okio.IOException
@@ -21,13 +24,15 @@ class GameFragment : Fragment(), View.OnClickListener {
     lateinit var gameFragmentBinding: GameFragmentBinding
     lateinit var combination: String
     var totalGuesses = 10
+    var matchCounter = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        gameFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
+        gameFragmentBinding =
+            DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
 
         initializeButtons()
         getRandomNumbers()
@@ -35,7 +40,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         return gameFragmentBinding.root
     }
 
-    private fun initializeButtons(){
+    private fun initializeButtons() {
         gameFragmentBinding.zeroButton.setOnClickListener(this)
         gameFragmentBinding.oneButton.setOnClickListener(this)
         gameFragmentBinding.twoButton.setOnClickListener(this)
@@ -53,7 +58,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(view: View?) {
 
-        when (view?.id){
+        when (view?.id) {
 
             gameFragmentBinding.zeroButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
             gameFragmentBinding.oneButton.id -> gameFragmentBinding.userGuessEdittext.append("1")
@@ -64,15 +69,38 @@ class GameFragment : Fragment(), View.OnClickListener {
             gameFragmentBinding.sixButton.id -> gameFragmentBinding.userGuessEdittext.append("6")
             gameFragmentBinding.sevenButton.id -> gameFragmentBinding.userGuessEdittext.append("7")
             gameFragmentBinding.revealButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
-            gameFragmentBinding.guessButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
 
             gameFragmentBinding.resetButton.id -> resetGame()
             gameFragmentBinding.deleteButton.id -> deleteLastEntry()
             gameFragmentBinding.hintButton.id -> displayHint()
+            gameFragmentBinding.guessButton.id -> {
+
+                if (totalGuesses > 0) {
+
+                    if (gameFragmentBinding.userGuessEdittext.text.toString().length in 1..3) {
+
+                        gameFragmentBinding.feedbackTextview.text =
+                            resources.getText(R.string.enter_four_digits)
+                        return
+                    }
+
+                    if (gameFragmentBinding.userGuessEdittext.text.toString().isEmpty()) {
+                        gameFragmentBinding.feedbackTextview.text =
+                            resources.getText(R.string.enter_valid_entry)
+                        return
+                    }
+
+                    totalGuesses--
+                    gameFragmentBinding.remainingGuessCountTextview.text = totalGuesses.toString()
+                    gameFragmentBinding.userGuessEdittext.text.clear()
+
+                    animateBartLinear()
+                }
+            }
         }
     }
 
-    private fun getRandomNumbers(){
+    private fun getRandomNumbers() {
 
         val okHttpClient = OkHttpClient()
 
@@ -100,7 +128,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
 
-                    val winningCombinationBundle =  Bundle()
+                    val winningCombinationBundle = Bundle()
 
                     val randomNumbersResponse = response.body!!.string()
                     Log.d("Random", randomNumbersResponse)
@@ -112,8 +140,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     val thirdNumber = separatedResponse[2]
                     val fourthNumber = separatedResponse[3]
 
-                     combination = firstNumber + secondNumber + thirdNumber + fourthNumber
-
+                    combination = firstNumber + secondNumber + thirdNumber + fourthNumber
 
 
                     val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
@@ -150,14 +177,15 @@ class GameFragment : Fragment(), View.OnClickListener {
         })
     }
 
-    private fun deleteLastEntry(){
+    private fun deleteLastEntry() {
         val guessLength = gameFragmentBinding.userGuessEdittext.text.length
 
-        if(guessLength > 0){
+        if (guessLength > 0) {
             gameFragmentBinding.userGuessEdittext.text.delete(guessLength - 1, guessLength)
         }
     }
-    private fun displayHint(){
+
+    private fun displayHint() {
         val hints = listOf(
             "There is no chance the number to guess is negative.",
             "C'mon! The combination is 4 digits long.",
@@ -169,13 +197,14 @@ class GameFragment : Fragment(), View.OnClickListener {
             "I would've solved it already.",
             "Okay a " + combination[0] + " is included somewhere.",
             "FINE! There's a " + combination[2] + " include somewhere.",
-            "You're running out of time!").random()
+            "You're running out of time!"
+        ).random()
 
         gameFragmentBinding.dispayHintsAndGameStatusTextview.text = hints
         gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
     }
 
-    private fun resetGame(){
+    private fun resetGame() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             fragmentManager?.beginTransaction()?.detach(this)?.commitNow()
             fragmentManager?.beginTransaction()?.attach(this)?.commitNow()
@@ -183,5 +212,79 @@ class GameFragment : Fragment(), View.OnClickListener {
             fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
         }
         gameFragmentBinding.userGuessEdittext.text.clear()
+        totalGuesses = 10
+    }
+
+    private fun disableButtons() {
+
+        gameFragmentBinding.zeroButton.isEnabled = false
+        gameFragmentBinding.oneButton.isEnabled = false
+        gameFragmentBinding.twoButton.isEnabled = false
+        gameFragmentBinding.threeButton.isEnabled = false
+        gameFragmentBinding.fourButton.isEnabled = false
+        gameFragmentBinding.fiveButton.isEnabled = false
+        gameFragmentBinding.sixButton.isEnabled = false
+        gameFragmentBinding.sevenButton.isEnabled = false
+        gameFragmentBinding.revealButton.isEnabled = false
+        gameFragmentBinding.guessButton.isEnabled = false
+        gameFragmentBinding.deleteButton.isEnabled = false
+        gameFragmentBinding.hintButton.isEnabled = false
+    }
+
+    private fun animateBrick(brick: ImageView) {
+        brick.startAnimation(
+            AnimationUtils.loadAnimation(
+                context, R.anim.slide_out_right
+            )
+        )
+        Handler().postDelayed({ brick.visibility = View.INVISIBLE }, 200)
+    }
+
+    private fun animateBartLinear(){
+
+        if(totalGuesses == 9){
+            animateBrick(gameFragmentBinding.brickTenImageview)
+        }
+        if(totalGuesses == 8){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartchilling)})
+            animateBrick(gameFragmentBinding.brickNineImageview)
+        }
+        if(totalGuesses == 7){
+            animateBrick(gameFragmentBinding.brickEightImageview)
+        }
+        if(totalGuesses == 6){
+            animateBrick(gameFragmentBinding.brickSevenImageview)
+        }
+        if(totalGuesses == 5){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartjumping)})
+            animateBrick(gameFragmentBinding.brickSixImageview)
+            }
+        if(totalGuesses == 4){
+            animateBrick(gameFragmentBinding.brickFiveImageview)
+        }
+        if(totalGuesses == 3){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
+            animateBrick(gameFragmentBinding.brickFourImageview)
+        }
+        if(totalGuesses == 2){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
+            animateBrick(gameFragmentBinding.brickThreeImageview)
+        }
+        if(totalGuesses == 1){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
+            animateBrick(gameFragmentBinding.brickTwoImageview)
+        }
+        if(totalGuesses == 0 && matchCounter != 4){
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartfalling)})
+            animateBrick(gameFragmentBinding.brickOneImageview)
+
+            gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
+            gameFragmentBinding.brickOneImageview.visibility = View.INVISIBLE
+
+            gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+
+            disableButtons()
+        }
     }
 }
+
