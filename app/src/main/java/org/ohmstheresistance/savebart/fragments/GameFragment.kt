@@ -154,4 +154,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             gameFragmentBinding.userGuessEdittext.text.delete(guessLength - 1, guessLength)
         }
     }
+    private fun getHintToDisplay(){
+
+    }
 }
