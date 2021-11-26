@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -19,7 +20,7 @@ import okio.IOException
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
 
-class GameFragment : Fragment(), View.OnClickListener {
+class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
     lateinit var gameFragmentBinding: GameFragmentBinding
     lateinit var combination: String
@@ -286,5 +287,16 @@ class GameFragment : Fragment(), View.OnClickListener {
             disableButtons()
         }
     }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when(event?.action){
+
+            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+        }
+        return false
+    }
+
+
 }
 
