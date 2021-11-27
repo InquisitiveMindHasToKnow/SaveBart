@@ -1,5 +1,6 @@
 package org.ohmstheresistance.savebart.fragments
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -24,8 +25,17 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
     lateinit var gameFragmentBinding: GameFragmentBinding
     lateinit var combination: String
-    var totalGuesses = 10
-    var matchCounter = 0
+    private var totalGuesses = 10
+    private var numberMatchCounter = 0
+    private val winningNumberCombo = Bundle()
+
+
+    private var rightsGuesses = arrayListOf<Int>()
+    private var comboList = arrayListOf<String>()
+    private var prevGuessesEnteredList = arrayListOf<String>()
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +65,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         gameFragmentBinding.resetButton.setOnClickListener(this)
         gameFragmentBinding.guessButton.setOnClickListener(this)
         gameFragmentBinding.deleteButton.setOnClickListener(this)
+
     }
 
     override fun onClick(view: View?) {
@@ -93,7 +104,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
                     totalGuesses--
                     gameFragmentBinding.remainingGuessCountTextview.text = totalGuesses.toString()
-                    gameFragmentBinding.userGuessEdittext.text.clear()
 
                     animateBartLinear()
                 }
@@ -129,8 +139,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
 
-                    val winningCombinationBundle = Bundle()
-
                     val randomNumbersResponse = response.body!!.string()
                     Log.d("Random", randomNumbersResponse)
 
@@ -142,6 +150,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                     val fourthNumber = separatedResponse[3]
 
                     combination = firstNumber + secondNumber + thirdNumber + fourthNumber
+                    comboList.add(combination)
+                    winningNumberCombo.putString("Combination", combination)
 
 
                     val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
@@ -243,6 +253,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
     private fun animateBartLinear(){
 
+        checkWhatMessageToDisplay()
+
         if(totalGuesses == 9){
             animateBrick(gameFragmentBinding.brickTenImageview)
         }
@@ -275,7 +287,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
             animateBrick(gameFragmentBinding.brickTwoImageview)
         }
-        if(totalGuesses == 0 && matchCounter != 4){
+        if(totalGuesses == 0 && numberMatchCounter != 4){
             gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartfalling)})
             animateBrick(gameFragmentBinding.brickOneImageview)
 
@@ -288,6 +300,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when(event?.action){
 
@@ -297,6 +310,48 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         return false
     }
 
+    private fun checkWhatMessageToDisplay() {
+
+
+        Log.d("combinationFromCheck", gameFragmentBinding.userGuessEdittext.text.toString())
+        matchCounter(combination, gameFragmentBinding.userGuessEdittext.text.toString())
+
+
+        if (numberMatchCounter == 1) {
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.one_entry_correct)
+            gameFragmentBinding.userGuessEdittext.setText("")
+            numberMatchCounter = 0
+
+        } else if (numberMatchCounter == 2) {
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.two_entries_correct)
+            gameFragmentBinding.userGuessEdittext.setText("")
+            numberMatchCounter = 0
+
+        } else if (numberMatchCounter == 3) {
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.three_entries_correct)
+            gameFragmentBinding.userGuessEdittext.setText("")
+            numberMatchCounter = 0
+
+        } else if (numberMatchCounter == 4) {
+
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
+            gameFragmentBinding.userGuessEdittext.setText("")
+            numberMatchCounter = 0
+            disableButtons()
+
+        } else {
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.incorrect)
+            gameFragmentBinding.userGuessEdittext.setText("")
+        }
+    }
+    private fun matchCounter(combo: String, entry: String): Int {
+        for (i in combo.indices) {
+            if (combo[i] == entry[i]) {
+                numberMatchCounter++
+            }
+        }
+        return numberMatchCounter
+    }
 
 }
 
