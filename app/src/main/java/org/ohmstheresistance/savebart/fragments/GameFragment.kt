@@ -227,7 +227,12 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
         }
         gameFragmentBinding.userGuessEdittext.text.clear()
+        prevGuessesEnteredList.clear()
+        rightsGuesses.clear()
+        comboList.clear()
+
         totalGuesses = 10
+        numberMatchCounter = 0
     }
 
     private fun disableButtons() {
@@ -316,13 +321,13 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
     private fun checkWhatMessageToDisplay() {
         prevGuessesEnteredList.add(gameFragmentBinding.userGuessEdittext.text.toString())
+
+        matchCounter(combination, gameFragmentBinding.userGuessEdittext.text.toString())
         rightsGuesses.add(numberMatchCounter)
 
         prevGuessesAdapter.setData(prevGuessesEnteredList)
         prevGuessesAdapter.setComboInfo(comboList)
         prevGuessesAdapter.setCorrectItems(rightsGuesses)
-
-        matchCounter(combination, gameFragmentBinding.userGuessEdittext.text.toString())
 
         when (numberMatchCounter) {
             1 -> {
