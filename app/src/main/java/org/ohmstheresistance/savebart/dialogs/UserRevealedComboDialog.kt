@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
@@ -13,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.UserRevealedComboBinding
 
-class UserRevealedComboDialog: DialogFragment(), View.OnClickListener {
+class UserRevealedComboDialog: DialogFragment(), View.OnClickListener, View.OnTouchListener {
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -32,6 +33,8 @@ class UserRevealedComboDialog: DialogFragment(), View.OnClickListener {
 
         userRevealedComboBinding.revealedCombinationConfirmButton.setOnClickListener(this)
         userRevealedComboBinding.revealedCombinationPlayAgainButton.setOnClickListener(this)
+        userRevealedComboBinding.revealedCombinationConfirmButton.setOnTouchListener(this)
+        userRevealedComboBinding.revealedCombinationPlayAgainButton.setOnTouchListener(this)
 
         return userRevealedComboBinding.root
     }
@@ -46,5 +49,15 @@ class UserRevealedComboDialog: DialogFragment(), View.OnClickListener {
             R.id.revealed_combination_confirm_button -> dialog!!.dismiss()
             R.id.revealed_combination_play_again_button -> playAgain()
         }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when(event?.action){
+
+            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+        }
+        return false
     }
 }

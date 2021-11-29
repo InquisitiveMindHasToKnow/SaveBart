@@ -1,7 +1,9 @@
 package org.ohmstheresistance.savebart.dialogs
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -12,15 +14,18 @@ import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.SaveBartInstructionsBinding
 import org.ohmstheresistance.savebart.fragments.LandingPageFragmentDirections
 
-class SaveBartInstructions: DialogFragment(), View.OnClickListener {
+class SaveBartInstructions: DialogFragment(), View.OnClickListener, View.OnTouchListener {
 
     lateinit var saveBartInstructionsBinding: SaveBartInstructionsBinding
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         saveBartInstructionsBinding =   DataBindingUtil.inflate(inflater, R.layout.save_bart_instructions, container, false)
 
         saveBartInstructionsBinding.gotItButton.setOnClickListener(this)
         saveBartInstructionsBinding.playNowFromInstructionsButton.setOnClickListener(this)
+        saveBartInstructionsBinding.gotItButton.setOnTouchListener(this)
+        saveBartInstructionsBinding.playNowFromInstructionsButton.setOnTouchListener(this)
 
         return saveBartInstructionsBinding.root
     }
@@ -41,5 +46,14 @@ class SaveBartInstructions: DialogFragment(), View.OnClickListener {
 
             saveBartInstructionsBinding.gotItButton.id -> dialog?.dismiss()
         }
+    }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when(event?.action){
+
+            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+        }
+        return false
     }
 }

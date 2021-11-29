@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
@@ -13,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.WinnerWinnerBinding
 
-class UserWonTheGameDialog : DialogFragment(), View.OnClickListener {
+class UserWonTheGameDialog : DialogFragment(), View.OnClickListener, View.OnTouchListener {
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -36,6 +37,8 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener {
 
         winnerWinnerBinding.winnerConfirmButton.setOnClickListener(this)
         winnerWinnerBinding.winnerPlayAgainButton.setOnClickListener(this)
+        winnerWinnerBinding.winnerConfirmButton.setOnTouchListener(this)
+        winnerWinnerBinding.winnerPlayAgainButton.setOnTouchListener(this)
 
         return winnerWinnerBinding.root
     }
@@ -51,5 +54,13 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener {
     private fun playAgain() {
         dialog!!.dismiss()
     }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when(event?.action){
 
+            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+        }
+        return false
+    }
 }

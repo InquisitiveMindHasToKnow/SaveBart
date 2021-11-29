@@ -56,6 +56,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         return gameFragmentBinding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initializeButtons() {
         gameFragmentBinding.zeroButton.setOnClickListener(this)
         gameFragmentBinding.oneButton.setOnClickListener(this)
@@ -70,6 +71,21 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         gameFragmentBinding.resetButton.setOnClickListener(this)
         gameFragmentBinding.guessButton.setOnClickListener(this)
         gameFragmentBinding.deleteButton.setOnClickListener(this)
+
+        gameFragmentBinding.zeroButton.setOnTouchListener(this)
+        gameFragmentBinding.oneButton.setOnTouchListener(this)
+        gameFragmentBinding.twoButton.setOnTouchListener(this)
+        gameFragmentBinding.threeButton.setOnTouchListener(this)
+        gameFragmentBinding.fourButton.setOnTouchListener(this)
+        gameFragmentBinding.fiveButton.setOnTouchListener(this)
+        gameFragmentBinding.sixButton.setOnTouchListener(this)
+        gameFragmentBinding.sevenButton.setOnTouchListener(this)
+        gameFragmentBinding.hintButton.setOnTouchListener(this)
+        gameFragmentBinding.revealButton.setOnTouchListener(this)
+        gameFragmentBinding.resetButton.setOnTouchListener(this)
+        gameFragmentBinding.guessButton.setOnTouchListener(this)
+        gameFragmentBinding.deleteButton.setOnTouchListener(this)
+
 
         gameFragmentBinding.prevGuessRecycler.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
         prevGuessesAdapter = PrevGuessesAdapter(prevGuessesEnteredList, comboList, rightsGuesses)
@@ -324,7 +340,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when(event?.action){
 
