@@ -24,6 +24,7 @@ import okio.IOException
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.adapters.PrevGuessesAdapter
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
+import org.ohmstheresistance.savebart.dialogs.NoMoreGuessesDialog
 import org.ohmstheresistance.savebart.dialogs.UserRevealedComboDialog
 import org.ohmstheresistance.savebart.dialogs.UserWonTheGameDialog
 
@@ -309,7 +310,15 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
             gameFragmentBinding.brickOneImageview.visibility = View.INVISIBLE
 
+            gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.no_more_guesses_feedback)
             gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+            gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
+            gameFragmentBinding.userGuessEdittext.setText(combination)
+
+            val noMoreGuessesDialog = NoMoreGuessesDialog()
+            noMoreGuessesDialog.arguments = winningCombinationBundle
+            activity?.let { noMoreGuessesDialog.show(it.supportFragmentManager, "NoMoreGuessesDialog") }
 
             disableButtons()
         }

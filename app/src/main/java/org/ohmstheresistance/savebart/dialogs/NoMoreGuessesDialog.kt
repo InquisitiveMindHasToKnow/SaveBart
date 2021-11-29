@@ -11,9 +11,9 @@ import androidx.annotation.Nullable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import org.ohmstheresistance.savebart.R
-import org.ohmstheresistance.savebart.databinding.WinnerWinnerBinding
+import org.ohmstheresistance.savebart.databinding.NoMoreGuessesBinding
 
-class UserWonTheGameDialog : DialogFragment(), View.OnClickListener {
+class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener {
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -27,29 +27,27 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        val winnerWinnerBinding = DataBindingUtil.inflate<WinnerWinnerBinding>(inflater, R.layout.winner_winner, container, false)
+        val noMoreGuessesDialogBinding = DataBindingUtil.inflate<NoMoreGuessesBinding>(inflater, R.layout.no_more_guesses, container, false)
 
         val getCombinationBundle = arguments
-        val winningCombo: String? = getCombinationBundle?.getString("Combination")
 
-        winnerWinnerBinding.winnerDialogCombinationTextview.text = ("Winning Combo: $winningCombo")
+        val winningCombo: String = getCombinationBundle?.getString("Combination").toString()
 
-        winnerWinnerBinding.winnerConfirmButton.setOnClickListener(this)
-        winnerWinnerBinding.winnerPlayAgainButton.setOnClickListener(this)
+        noMoreGuessesDialogBinding.noMoreGuessesWinningCombinationTextview.text = ("Winning combination: $winningCombo")
+        noMoreGuessesDialogBinding.noMoreGuessesConfirmButton.setOnClickListener(this)
+        noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnClickListener(this)
 
-        return winnerWinnerBinding.root
+        return noMoreGuessesDialogBinding.root
     }
-
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.winner_confirm_button -> dialog!!.dismiss()
-            R.id.winner_play_again_button -> playAgain()
+            R.id.no_more_guesses_confirm_button -> dialog!!.dismiss()
+            R.id.no_more_guesses_play_again_button -> playAgain()
         }
     }
 
     private fun playAgain() {
         dialog!!.dismiss()
     }
-
 }

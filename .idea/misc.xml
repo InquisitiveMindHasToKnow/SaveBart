@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1078125" />
         <entry key="app/src/main/res/layout/game_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/landing_page_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/no_more_guesses.xml" value="0.11145833333333334" />
         <entry key="app/src/main/res/layout/previous_guesses_itemview.xml" value="0.1" />
         <entry key="app/src/main/res/layout/save_bart_instructions.xml" value="0.121875" />
         <entry key="app/src/main/res/layout/user_revealed_combo.xml" value="0.1" />

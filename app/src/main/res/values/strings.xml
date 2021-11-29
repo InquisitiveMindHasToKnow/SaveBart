@@ -29,5 +29,6 @@
     <string name="incorrect"><font fgcolor="#F44336">Incorrect.</font></string>
     <string name="correct"><font fgcolor="#5CB5B5">Correct!</font></string>
     <string name="you_won_text"><font fgcolor="#5CB5B5">You won! Bart is saved!</font></string>
+    <string name="no_more_guesses_feedback"><font fgcolor="#F44336">You did not guess the combo with your 10 guesses.</font></string>
 
 </resources>
