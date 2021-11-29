@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimaryDark"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/revealed_combination_you_lost_textview"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/autour_one"
+            android:gravity="center"
+            android:text="You lost!"
+            android:textColor="@color/low_guesses_color"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/revealed_combination_winning_combination_textview"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/autour_one"
+            android:gravity="center"
+            android:textColor="@color/userWonColor"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/bart_you_lost_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/bartlooking" />
+
+
+        <TextView
+            android:id="@+id/revealed_combination_message_textview"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/autour_one"
+            android:gravity="center"
+            android:text="You revealed the correct combination manually before the game ended."
+            android:textColor="@color/low_guesses_color" />
+
+        <TextView
+            android:id="@+id/revealed_combination_message_two_textview"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/autour_one"
+            android:gravity="center"
+            android:text="Better luck next time!"
+            android:textColor="@color/low_guesses_color" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/revealed_combination_confirm_button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/rounded_button_corners"
+                android:fontFamily="@font/autour_one"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="Confirm"
+                android:textAllCaps="false"
+                android:textColor="@color/low_guesses_color" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/revealed_combination_play_again_button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/rounded_button_corners"
+                android:fontFamily="@font/autour_one"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="Play Again"
+                android:textAllCaps="false"
+                android:textColor="@color/low_guesses_color" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    </layout>

@@ -1,6 +1,8 @@
 package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -23,6 +25,7 @@ import okio.IOException
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.adapters.PrevGuessesAdapter
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
+import org.ohmstheresistance.savebart.dialogs.UserRevealedComboDialog
 
 class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
@@ -34,6 +37,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
     private var rightsGuesses = ArrayList<Int>()
     private var comboList = ArrayList<String>()
     private var prevGuessesEnteredList = ArrayList<String>()
+    val winningCombinationBundle = Bundle()
 
     private lateinit var prevGuessesAdapter : PrevGuessesAdapter
 
@@ -83,8 +87,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             gameFragmentBinding.fiveButton.id -> gameFragmentBinding.userGuessEdittext.append("5")
             gameFragmentBinding.sixButton.id -> gameFragmentBinding.userGuessEdittext.append("6")
             gameFragmentBinding.sevenButton.id -> gameFragmentBinding.userGuessEdittext.append("7")
-            gameFragmentBinding.revealButton.id -> gameFragmentBinding.userGuessEdittext.append("0")
 
+            gameFragmentBinding.revealButton.id -> revealCombination()
             gameFragmentBinding.resetButton.id -> resetGame()
             gameFragmentBinding.deleteButton.id -> deleteLastEntry()
             gameFragmentBinding.hintButton.id -> displayHint()
@@ -156,6 +160,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
                     combination = firstNumber + secondNumber + thirdNumber + fourthNumber
                     comboList.add(combination)
+
+                    winningCombinationBundle.putString("Combination", combination)
 
                     val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
                     listOf(numbers).random()
@@ -369,5 +375,55 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             }
         }
         return numberMatchCounter
+    }
+
+    private fun revealCombination() {
+        val alertDialog: AlertDialog.Builder =
+            AlertDialog.Builder(context, R.style.RevealDialog)
+        alertDialog.setTitle("Reveal combination?")
+        alertDialog.setMessage("Completing this action will result in a loss!")
+        alertDialog.setPositiveButton("Confirm",
+            DialogInterface.OnClickListener { dialog, which ->
+                gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.revealed_answer_feedback)
+                gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+
+                val userRevealedComboDialog = UserRevealedComboDialog()
+                userRevealedComboDialog.arguments = winningCombinationBundle
+                activity?.let { userRevealedComboDialog.show(it.supportFragmentManager, "UserRevealedComboDialog") }
+                disableButtons()
+
+                animateBrick(gameFragmentBinding.brickOneImageview)
+                animateBrick(gameFragmentBinding.brickTwoImageview)
+                animateBrick(gameFragmentBinding.brickThreeImageview)
+                animateBrick(gameFragmentBinding.brickFourImageview)
+                animateBrick(gameFragmentBinding.brickFiveImageview)
+                animateBrick(gameFragmentBinding.brickSixImageview)
+                animateBrick(gameFragmentBinding.brickSevenImageview)
+                animateBrick(gameFragmentBinding.brickEightImageview)
+                animateBrick(gameFragmentBinding.brickNineImageview)
+                animateBrick(gameFragmentBinding.brickTenImageview)
+
+
+                gameFragmentBinding.brickOneImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickTwoImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickThreeImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickFourImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickFiveImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickSixImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickSevenImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickEightImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickNineImageview.visibility = (View.INVISIBLE)
+                gameFragmentBinding.brickTenImageview.visibility = (View.INVISIBLE)
+
+                gameFragmentBinding.personImageview.setImageResource(R.drawable.bartfalling)
+
+                gameFragmentBinding.personImageview.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        context, R.anim.exit_bottom))
+            })
+        alertDialog.setNegativeButton("No",
+            DialogInterface.OnClickListener { dialog, which -> })
+        alertDialog.show()
     }
 }
