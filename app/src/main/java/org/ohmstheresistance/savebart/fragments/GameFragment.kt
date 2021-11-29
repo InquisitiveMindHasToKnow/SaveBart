@@ -19,13 +19,13 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import okhttp3.*
 import okio.IOException
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.adapters.PrevGuessesAdapter
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
 import org.ohmstheresistance.savebart.dialogs.UserRevealedComboDialog
+import org.ohmstheresistance.savebart.dialogs.UserWonTheGameDialog
 
 class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
@@ -354,14 +354,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                 numberMatchCounter = 0
 
             }
-            4 -> {
-
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
-                gameFragmentBinding.userGuessEdittext.setText("")
-                numberMatchCounter = 0
-                disableButtons()
-
-            }
+            4 -> { userWon() }
             else -> {
                 gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.incorrect)
                 gameFragmentBinding.userGuessEdittext.setText("")
@@ -378,8 +371,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
     }
 
     private fun revealCombination() {
-        val alertDialog: AlertDialog.Builder =
-            AlertDialog.Builder(context, R.style.RevealDialog)
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(context, R.style.RevealDialog)
         alertDialog.setTitle("Reveal combination?")
         alertDialog.setMessage("Completing this action will result in a loss!")
         alertDialog.setPositiveButton("Confirm",
@@ -387,6 +379,9 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                 gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
                 gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.revealed_answer_feedback)
                 gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+
+                gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
+                gameFragmentBinding.userGuessEdittext.setText(combination)
 
                 val userRevealedComboDialog = UserRevealedComboDialog()
                 userRevealedComboDialog.arguments = winningCombinationBundle
@@ -426,4 +421,18 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             DialogInterface.OnClickListener { dialog, which -> })
         alertDialog.show()
     }
-}
+
+    private fun userWon() {
+        disableButtons()
+
+        gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_won_text)
+        gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
+        gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.userWonColor))
+        gameFragmentBinding.userGuessEdittext.setText(combination)
+
+        val userWonTheGameDialog = UserWonTheGameDialog()
+        userWonTheGameDialog.arguments = winningCombinationBundle
+        activity?.let { userWonTheGameDialog.show(it.supportFragmentManager, "WinnerWinnerDialog") }
+        }
+    }
