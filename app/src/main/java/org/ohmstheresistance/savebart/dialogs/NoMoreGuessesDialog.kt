@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
@@ -13,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.NoMoreGuessesBinding
 
-class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener {
+class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener, View.OnTouchListener {
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -36,6 +37,8 @@ class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener {
         noMoreGuessesDialogBinding.noMoreGuessesWinningCombinationTextview.text = ("Winning combination: $winningCombo")
         noMoreGuessesDialogBinding.noMoreGuessesConfirmButton.setOnClickListener(this)
         noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnClickListener(this)
+        noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnTouchListener(this)
+        noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnTouchListener(this)
 
         return noMoreGuessesDialogBinding.root
     }
@@ -49,5 +52,14 @@ class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener {
 
     private fun playAgain() {
         dialog!!.dismiss()
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when(event?.action){
+
+            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+        }
+        return false
     }
 }
