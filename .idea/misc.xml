@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/layout/previous_guesses_itemview.xml" value="0.1" />
         <entry key="app/src/main/res/layout/save_bart_instructions.xml" value="0.121875" />
         <entry key="app/src/main/res/layout/user_revealed_combo.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/winner_winner.xml" value="0.1" />
       </map>
     </option>
   </component>
