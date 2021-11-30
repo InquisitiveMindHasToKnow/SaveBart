@@ -3,6 +3,7 @@ package org.ohmstheresistance.savebart.fragments
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -242,7 +243,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
     }
 
-    private fun resetGame() {
+     private fun resetGame() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             fragmentManager?.beginTransaction()?.detach(this)?.commitNow()
             fragmentManager?.beginTransaction()?.attach(this)?.commitNow()
@@ -256,6 +257,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
         totalGuesses = 10
         numberMatchCounter = 0
+
     }
 
     private fun disableButtons() {
@@ -334,8 +336,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
             val noMoreGuessesDialog = NoMoreGuessesDialog()
             noMoreGuessesDialog.arguments = winningCombinationBundle
-            activity?.let { noMoreGuessesDialog.show(it.supportFragmentManager, "NoMoreGuessesDialog") }
-
+            noMoreGuessesDialog.setTargetFragment(this, 1)
+            activity?.let { fragmentManager?.let { it -> noMoreGuessesDialog.show(it, "NoMoreGuessesDialog") } }
             disableButtons()
         }
     }
@@ -409,8 +411,9 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                 gameFragmentBinding.userGuessEdittext.setText(combination)
 
                 val userRevealedComboDialog = UserRevealedComboDialog()
+                userRevealedComboDialog.setTargetFragment(this, 1)
                 userRevealedComboDialog.arguments = winningCombinationBundle
-                activity?.let { userRevealedComboDialog.show(it.supportFragmentManager, "UserRevealedComboDialog") }
+                activity?.let { fragmentManager?.let { it -> userRevealedComboDialog.show(it, "UserRevealedComboDialog") } }
                 disableButtons()
 
                 animateBrick(gameFragmentBinding.brickOneImageview)
@@ -458,6 +461,16 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
 
         val userWonTheGameDialog = UserWonTheGameDialog()
         userWonTheGameDialog.arguments = winningCombinationBundle
-        activity?.let { userWonTheGameDialog.show(it.supportFragmentManager, "WinnerWinnerDialog") }
+        userWonTheGameDialog.setTargetFragment(this, 1)
+        activity?.let { fragmentManager?.let { it -> userWonTheGameDialog.show(it, "WinnerWinnerDialog") } }
+        disableButtons()
+        }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode == 1){
+            resetGame()
         }
     }
+}

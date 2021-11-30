@@ -43,6 +43,10 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener, View.OnTouc
         return winnerWinnerBinding.root
     }
 
+    private fun playAgain() {
+        targetFragment?.onActivityResult(targetRequestCode, 1, activity?.intent)
+        dialog!!.dismiss()
+    }
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -51,9 +55,6 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener, View.OnTouc
         }
     }
 
-    private fun playAgain() {
-        dialog!!.dismiss()
-    }
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when(event?.action){
