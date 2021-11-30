@@ -1,4 +1,4 @@
-package org.ohmstheresistance.savebart
+package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
+import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.SplashScreenFragmentBinding
 
 class SplashScreenFragment : Fragment() {
@@ -37,19 +38,34 @@ class SplashScreenFragment : Fragment() {
                 splashScreenFragmentBinding.splashEdittext.append("0")
 
                 Handler().postDelayed({
-                    splashScreenFragmentBinding.splashZeroButton.background = resources.getDrawable(R.drawable.rounded_button_corners)
-                    splashScreenFragmentBinding.splashFiveButton.background = resources.getDrawable(R.drawable.pressed_rounded_button)
+                    splashScreenFragmentBinding.splashZeroButton.background = resources.getDrawable(
+                        R.drawable.rounded_button_corners
+                    )
+                    splashScreenFragmentBinding.splashFiveButton.background = resources.getDrawable(
+                        R.drawable.pressed_rounded_button
+                    )
                     splashScreenFragmentBinding.splashEdittext.append("5")
 
                     Handler().postDelayed({
-                        splashScreenFragmentBinding.splashFiveButton.background = resources.getDrawable(R.drawable.rounded_button_corners)
+                        splashScreenFragmentBinding.splashFiveButton.background =
+                            resources.getDrawable(
+                                R.drawable.rounded_button_corners
+                            )
                         splashScreenFragmentBinding.splashThreeButton.background = resources.getDrawable(R.drawable.pressed_rounded_button)
                         splashScreenFragmentBinding.splashEdittext.append("3")
 
                         Handler().postDelayed({
-                            splashScreenFragmentBinding.splashThreeButton.background = resources.getDrawable(R.drawable.rounded_button_corners)
-                            splashScreenFragmentBinding.splashCheckmark.visibility = View.VISIBLE
-                        }, 500)
+                            splashScreenFragmentBinding.splashThreeButton.background =
+                                resources.getDrawable(R.drawable.rounded_button_corners)
+                            splashScreenFragmentBinding.splashEnterButton.background =
+                                resources.getDrawable(R.drawable.pressed_rounded_button)
+
+                            Handler().postDelayed({
+                                splashScreenFragmentBinding.splashEnterButton.background = resources.getDrawable(R.drawable.rounded_button_corners)
+                                splashScreenFragmentBinding.splashCheckmark.visibility =
+                                    View.VISIBLE
+                            }, 500)
+                        }, 200)
                     }, 200)
                 }, 200)
             }, 200)

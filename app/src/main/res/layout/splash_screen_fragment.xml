@@ -316,6 +316,21 @@
                 android:textStyle="bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/splash_enter_button"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginEnd="70dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_button_corners"
+            android:fontFamily="@font/autour_one"
+            android:gravity="center"
+            android:text="Enter"
+            android:textColor="@color/textColor"
+            android:textSize="24sp"
+            android:textStyle="bold" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

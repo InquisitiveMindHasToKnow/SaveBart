@@ -34,9 +34,9 @@ class LandingPageFragment : Fragment(), View.OnClickListener, View.OnTouchListen
 
         when(view?.id){
 
-            landingPageFragmentBinding.instructionsButton.id -> fragmentManager?.let {
-                SaveBartInstructions().show(
-                    it, "SaveBartInstructions")
+            landingPageFragmentBinding.instructionsButton.id -> {
+                val saveBartInstructions = SaveBartInstructions()
+                activity?.let { fragmentManager?.let { it -> saveBartInstructions.show(it, "SaveBartInstructions") } }
             }
             landingPageFragmentBinding.playNowButton.id -> findNavController().navigate(LandingPageFragmentDirections.actionLandingPageFragmentToGameFragment())
         }
