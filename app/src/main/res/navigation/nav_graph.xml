@@ -23,7 +23,7 @@
         tools:layout="@layout/game_fragment" />
     <fragment
         android:id="@+id/splashScreenFragment"
-        android:name="org.ohmstheresistance.savebart.SplashScreenFragment"
+        android:name="org.ohmstheresistance.savebart.fragments.SplashScreenFragment"
         android:label="SplashScreenFragment" >
         <action
             android:id="@+id/action_splashScreenFragment_to_landingPageFragment"
