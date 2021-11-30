@@ -14,7 +14,7 @@
             android:id="@+id/action_landingPageFragment_to_gameFragment"
             app:destination="@id/gameFragment"
             app:popUpTo="@id/landingPageFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/gameFragment"

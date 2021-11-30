@@ -51,6 +51,7 @@ class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener, View.OnTouchL
     }
 
     private fun playAgain() {
+        targetFragment?.onActivityResult(targetRequestCode, 1, activity?.intent)
         dialog!!.dismiss()
     }
 
