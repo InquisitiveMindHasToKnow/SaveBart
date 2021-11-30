@@ -42,6 +42,7 @@ class LandingPageFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when(event?.action){
 
@@ -50,6 +51,4 @@ class LandingPageFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         }
         return false
     }
-
-
 }
