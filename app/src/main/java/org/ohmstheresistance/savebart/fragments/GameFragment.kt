@@ -2,12 +2,12 @@ package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.os.*
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -26,22 +26,29 @@ import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.adapters.PrevGuessesAdapter
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
 import org.ohmstheresistance.savebart.dialogs.NoMoreGuessesDialog
+import org.ohmstheresistance.savebart.dialogs.TimerRanOutDialog
 import org.ohmstheresistance.savebart.dialogs.UserRevealedComboDialog
 import org.ohmstheresistance.savebart.dialogs.UserWonTheGameDialog
+import java.util.*
+import kotlin.collections.ArrayList
 
-class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
+class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
     lateinit var gameFragmentBinding: GameFragmentBinding
     lateinit var combination: String
     private var totalGuesses = 10
     private var numberMatchCounter = 0
-
     private var rightsGuesses = ArrayList<Int>()
+
+    val COUNTDOWN_TIMER_IN_MILLIS = 30000
+    var timeLeftInMillis = 0
+    lateinit var countDownTimer: CountDownTimer
+
     private var comboList = ArrayList<String>()
     private var prevGuessesEnteredList = ArrayList<String>()
     val winningCombinationBundle = Bundle()
 
-    private lateinit var prevGuessesAdapter : PrevGuessesAdapter
+    private lateinit var prevGuessesAdapter: PrevGuessesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +59,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
 
         initializeButtons()
-        getRandomNumbers()
+        checkInternetConnection()
 
         return gameFragmentBinding.root
     }
@@ -88,7 +95,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
         gameFragmentBinding.deleteButton.setOnTouchListener(this)
 
 
-        gameFragmentBinding.prevGuessRecycler.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
+        gameFragmentBinding.prevGuessRecycler.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         prevGuessesAdapter = PrevGuessesAdapter(prevGuessesEnteredList, comboList, rightsGuesses)
         gameFragmentBinding.prevGuessRecycler.adapter = prevGuessesAdapter
     }
@@ -134,6 +142,294 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                 }
             }
         }
+    }
+    private fun deleteLastEntry() {
+        val guessLength = gameFragmentBinding.userGuessEdittext.text.length
+
+        if (guessLength > 0) {
+            gameFragmentBinding.userGuessEdittext.text.delete(guessLength - 1, guessLength)
+        }
+    }
+
+    private fun displayHint() {
+        val hints = listOf(
+            "There is no chance the number to guess is negative.",
+            "C'mon! The combination is 4 digits long.",
+            "At least one of the numbers above is in the combo.",
+            "You have $totalGuesses guesses remaining!",
+            "Haha! Not happening!",
+            "Nope! Not happening!",
+            "I could but where's the fun in that?",
+            "It's only 4 digits. You got this!",
+            "I would've solved it already.",
+            "Okay a " + combination[0] + " is included somewhere.",
+            "FINE! There's a " + combination[2] + " include somewhere.",
+            "You're running out of time!"
+        ).random()
+
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = hints
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
+    }
+
+    private fun resetGame() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            fragmentManager?.beginTransaction()?.detach(this)?.commitNow()
+            fragmentManager?.beginTransaction()?.attach(this)?.commitNow()
+        } else {
+            fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
+        }
+        gameFragmentBinding.userGuessEdittext.text.clear()
+        prevGuessesEnteredList.clear()
+        rightsGuesses.clear()
+        comboList.clear()
+
+        totalGuesses = 10
+        numberMatchCounter = 0
+
+    }
+
+    private fun disableButtons() {
+
+        gameFragmentBinding.zeroButton.isEnabled = false
+        gameFragmentBinding.oneButton.isEnabled = false
+        gameFragmentBinding.twoButton.isEnabled = false
+        gameFragmentBinding.threeButton.isEnabled = false
+        gameFragmentBinding.fourButton.isEnabled = false
+        gameFragmentBinding.fiveButton.isEnabled = false
+        gameFragmentBinding.sixButton.isEnabled = false
+        gameFragmentBinding.sevenButton.isEnabled = false
+        gameFragmentBinding.revealButton.isEnabled = false
+        gameFragmentBinding.guessButton.isEnabled = false
+        gameFragmentBinding.deleteButton.isEnabled = false
+        gameFragmentBinding.hintButton.isEnabled = false
+    }
+
+    private fun animateBrick(brick: ImageView) {
+        brick.startAnimation(
+            AnimationUtils.loadAnimation(
+                context, R.anim.slide_out_right
+            )
+        )
+        Handler().postDelayed({ brick.visibility = View.INVISIBLE }, 200)
+    }
+
+    private fun animateBartLinear() {
+
+        checkWhatMessageToDisplay()
+
+        if (totalGuesses == 9) {
+            animateBrick(gameFragmentBinding.brickTenImageview)
+        }
+        if (totalGuesses == 8) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartchilling
+                )
+            })
+            animateBrick(gameFragmentBinding.brickNineImageview)
+        }
+        if (totalGuesses == 7) {
+            animateBrick(gameFragmentBinding.brickEightImageview)
+        }
+        if (totalGuesses == 6) {
+            animateBrick(gameFragmentBinding.brickSevenImageview)
+        }
+        if (totalGuesses == 5) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartjumping
+                )
+            })
+            animateBrick(gameFragmentBinding.brickSixImageview)
+        }
+        if (totalGuesses == 4) {
+            animateBrick(gameFragmentBinding.brickFiveImageview)
+        }
+        if (totalGuesses == 3) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartscared
+                )
+            })
+            animateBrick(gameFragmentBinding.brickFourImageview)
+        }
+        if (totalGuesses == 2) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartscared
+                )
+            })
+            animateBrick(gameFragmentBinding.brickThreeImageview)
+        }
+        if (totalGuesses == 1) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartscared
+                )
+            })
+            animateBrick(gameFragmentBinding.brickTwoImageview)
+        }
+        if (totalGuesses == 0 && numberMatchCounter != 4) {
+            gameFragmentBinding.personImageview.setImageDrawable(context?.let {
+                getDrawable(
+                    it,
+                    R.drawable.bartfalling
+                )
+            })
+            animateBrick(gameFragmentBinding.brickOneImageview)
+
+            gameFragmentBinding.personImageview.startAnimation(
+                AnimationUtils.loadAnimation(
+                    context,
+                    R.anim.exit_bottom
+                )
+            )
+            gameFragmentBinding.brickOneImageview.visibility = View.INVISIBLE
+
+            gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+            gameFragmentBinding.feedbackTextview.text =
+                resources.getText(R.string.no_more_guesses_feedback)
+            gameFragmentBinding.dispayHintsAndGameStatusTextview.text =
+                resources.getText(R.string.you_lost_text)
+            gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
+            gameFragmentBinding.userGuessEdittext.setText(combination)
+
+            val noMoreGuessesDialog = NoMoreGuessesDialog()
+            noMoreGuessesDialog.arguments = winningCombinationBundle
+            noMoreGuessesDialog.setTargetFragment(this, 1)
+            activity?.let { fragmentManager?.let { it -> noMoreGuessesDialog.show(it, "NoMoreGuessesDialog") } }
+
+            disableButtons()
+        }
+    }
+    private fun checkWhatMessageToDisplay() {
+        prevGuessesEnteredList.add(gameFragmentBinding.userGuessEdittext.text.toString())
+
+        matchCounter(combination, gameFragmentBinding.userGuessEdittext.text.toString())
+        rightsGuesses.add(numberMatchCounter)
+
+        prevGuessesAdapter.setData(prevGuessesEnteredList)
+        prevGuessesAdapter.setComboInfo(comboList)
+        prevGuessesAdapter.setCorrectItems(rightsGuesses)
+
+        when (numberMatchCounter) {
+            1 -> {
+                gameFragmentBinding.feedbackTextview.text =
+                    resources.getText(R.string.one_entry_correct)
+                gameFragmentBinding.userGuessEdittext.setText("")
+                numberMatchCounter = 0
+
+            }
+            2 -> {
+                gameFragmentBinding.feedbackTextview.text =
+                    resources.getText(R.string.two_entries_correct)
+                gameFragmentBinding.userGuessEdittext.setText("")
+                numberMatchCounter = 0
+
+            }
+            3 -> {
+                gameFragmentBinding.feedbackTextview.text =
+                    resources.getText(R.string.three_entries_correct)
+                gameFragmentBinding.userGuessEdittext.setText("")
+                numberMatchCounter = 0
+
+            }
+            4 -> {
+                userWon()
+            }
+            else -> {
+                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.incorrect)
+                gameFragmentBinding.userGuessEdittext.setText("")
+            }
+        }
+    }
+
+    private fun matchCounter(combo: String, entry: String): Int {
+        for (i in combo.indices) {
+            if (combo[i] == entry[i]) {
+                numberMatchCounter++
+            }
+        }
+        return numberMatchCounter
+    }
+
+    private fun revealCombination() {
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(context, R.style.RevealDialog)
+        alertDialog.setTitle("Reveal combination?")
+        alertDialog.setMessage("Completing this action will result in a loss!")
+        alertDialog.setPositiveButton("Confirm",
+            DialogInterface.OnClickListener { dialog, which ->
+                gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.revealed_answer_feedback)
+                gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+
+                gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
+                gameFragmentBinding.userGuessEdittext.setText(combination)
+
+                val userRevealedComboDialog = UserRevealedComboDialog()
+                userRevealedComboDialog.setTargetFragment(this, 1)
+                userRevealedComboDialog.arguments = winningCombinationBundle
+                activity?.let {
+                    fragmentManager?.let { it ->
+                        userRevealedComboDialog.show(
+                            it,
+                            "UserRevealedComboDialog"
+                        )
+                    }
+                }
+                disableButtons()
+
+                animateBrick(gameFragmentBinding.brickOneImageview)
+                animateBrick(gameFragmentBinding.brickTwoImageview)
+                animateBrick(gameFragmentBinding.brickThreeImageview)
+                animateBrick(gameFragmentBinding.brickFourImageview)
+                animateBrick(gameFragmentBinding.brickFiveImageview)
+                animateBrick(gameFragmentBinding.brickSixImageview)
+                animateBrick(gameFragmentBinding.brickSevenImageview)
+                animateBrick(gameFragmentBinding.brickEightImageview)
+                animateBrick(gameFragmentBinding.brickNineImageview)
+                animateBrick(gameFragmentBinding.brickTenImageview)
+
+                makeBricksInvisible(gameFragmentBinding.brickOneImageview)
+                makeBricksInvisible(gameFragmentBinding.brickTwoImageview)
+                makeBricksInvisible(gameFragmentBinding.brickThreeImageview)
+                makeBricksInvisible(gameFragmentBinding.brickFourImageview)
+                makeBricksInvisible(gameFragmentBinding.brickFiveImageview)
+                makeBricksInvisible(gameFragmentBinding.brickSixImageview)
+                makeBricksInvisible(gameFragmentBinding.brickSevenImageview)
+                makeBricksInvisible(gameFragmentBinding.brickEightImageview)
+                makeBricksInvisible(gameFragmentBinding.brickNineImageview)
+                makeBricksInvisible(gameFragmentBinding.brickTenImageview)
+
+                gameFragmentBinding.personImageview.setImageResource(R.drawable.bartfalling)
+                gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
+            })
+        alertDialog.setNegativeButton("No",
+            DialogInterface.OnClickListener { dialog, which -> })
+        alertDialog.show()
+    }
+
+    private fun userWon() {
+        disableButtons()
+
+        gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.text =
+            resources.getText(R.string.you_won_text)
+        gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
+        gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.userWonColor))
+        gameFragmentBinding.userGuessEdittext.setText(combination)
+
+        val userWonTheGameDialog = UserWonTheGameDialog()
+        userWonTheGameDialog.arguments = winningCombinationBundle
+        userWonTheGameDialog.setTargetFragment(this, 1)
+        activity?.let { fragmentManager?.let { it -> userWonTheGameDialog.show(it, "WinnerWinnerDialog") }
+        }
+        disableButtons()
     }
 
     private fun getRandomNumbers() {
@@ -182,22 +478,14 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
                     winningCombinationBundle.putString("Combination", combination)
 
                     val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
-                    listOf(numbers).random()
+                    numbers.random()
 
-                    val eightNumbersToDisplay = listOf(
-                        numbers[6],
-                        numbers[4],
-                        numbers[2],
-                        numbers[0],
-                        firstNumber,
-                        secondNumber,
-                        thirdNumber,
-                        fourthNumber
-                    )
-                    listOf(eightNumbersToDisplay).random()
+                    val eightNumbersToDisplay = listOf(numbers[6], numbers[4], numbers[2], numbers[0], firstNumber, secondNumber, thirdNumber, fourthNumber)
+                    eightNumbersToDisplay.random()
 
                     Handler(Looper.getMainLooper()).post {
 
+                        startCountDown()
                         gameFragmentBinding.combinationTextview.text = combination
 
                         gameFragmentBinding.firstNumberTextview.text = eightNumbersToDisplay[5]
@@ -214,263 +502,120 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener{
             }
         })
     }
+    private fun makeBricksInvisible(brick: ImageView){
+        brick.visibility = View.INVISIBLE
+    }
+    private fun userLostBecauseTimerRanOut() {
+        gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
 
-    private fun deleteLastEntry() {
-        val guessLength = gameFragmentBinding.userGuessEdittext.text.length
+        animateBrick(gameFragmentBinding.brickOneImageview)
+        animateBrick(gameFragmentBinding.brickTwoImageview)
+        animateBrick(gameFragmentBinding.brickThreeImageview)
+        animateBrick(gameFragmentBinding.brickFourImageview)
+        animateBrick(gameFragmentBinding.brickFiveImageview)
+        animateBrick(gameFragmentBinding.brickSixImageview)
+        animateBrick(gameFragmentBinding.brickSevenImageview)
+        animateBrick(gameFragmentBinding.brickEightImageview)
+        animateBrick(gameFragmentBinding.brickNineImageview)
+        animateBrick(gameFragmentBinding.brickTenImageview)
 
-        if (guessLength > 0) {
-            gameFragmentBinding.userGuessEdittext.text.delete(guessLength - 1, guessLength)
+        makeBricksInvisible(gameFragmentBinding.brickOneImageview)
+        makeBricksInvisible(gameFragmentBinding.brickTwoImageview)
+        makeBricksInvisible(gameFragmentBinding.brickThreeImageview)
+        makeBricksInvisible(gameFragmentBinding.brickFourImageview)
+        makeBricksInvisible(gameFragmentBinding.brickFiveImageview)
+        makeBricksInvisible(gameFragmentBinding.brickSixImageview)
+        makeBricksInvisible(gameFragmentBinding.brickSevenImageview)
+        makeBricksInvisible(gameFragmentBinding.brickEightImageview)
+        makeBricksInvisible(gameFragmentBinding.brickNineImageview)
+        makeBricksInvisible(gameFragmentBinding.brickTenImageview)
+
+        gameFragmentBinding.personImageview.setImageResource(R.drawable.bartfalling)
+        gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
+        gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.ran_out_of_time)
+        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
+
+
+        val timerRanOutDialog = TimerRanOutDialog()
+        timerRanOutDialog.arguments = winningCombinationBundle
+        timerRanOutDialog.setTargetFragment(this, 1)
+        activity?.let { fragmentManager?.let { it -> timerRanOutDialog.show(it, "TimerRanOutDialog") }
         }
+        disableButtons()
     }
 
-    private fun displayHint() {
-        val hints = listOf(
-            "There is no chance the number to guess is negative.",
-            "C'mon! The combination is 4 digits long.",
-            "At least one of the numbers above is in the combo.",
-            "You have $totalGuesses guesses remaining!",
-            "Haha! Not happening!",
-            "Nope! Not happening!",
-            "I could but where's the fun in that?",
-            "It's only 4 digits. You got this!",
-            "I would've solved it already.",
-            "Okay a " + combination[0] + " is included somewhere.",
-            "FINE! There's a " + combination[2] + " include somewhere.",
-            "You're running out of time!"
-        ).random()
+    private fun checkInternetConnection() {
+        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectedToInternet = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)!!.state == NetworkInfo.State.CONNECTED
+        if (connectedToInternet) {
+            getRandomNumbers()
 
-        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = hints
-        gameFragmentBinding.dispayHintsAndGameStatusTextview.setTextColor(resources.getColor(R.color.hintColor))
-    }
-
-     private fun resetGame() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            fragmentManager?.beginTransaction()?.detach(this)?.commitNow()
-            fragmentManager?.beginTransaction()?.attach(this)?.commitNow()
         } else {
-            fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
-        }
-        gameFragmentBinding.userGuessEdittext.text.clear()
-        prevGuessesEnteredList.clear()
-        rightsGuesses.clear()
-        comboList.clear()
 
-        totalGuesses = 10
-        numberMatchCounter = 0
-
-    }
-
-    private fun disableButtons() {
-
-        gameFragmentBinding.zeroButton.isEnabled = false
-        gameFragmentBinding.oneButton.isEnabled = false
-        gameFragmentBinding.twoButton.isEnabled = false
-        gameFragmentBinding.threeButton.isEnabled = false
-        gameFragmentBinding.fourButton.isEnabled = false
-        gameFragmentBinding.fiveButton.isEnabled = false
-        gameFragmentBinding.sixButton.isEnabled = false
-        gameFragmentBinding.sevenButton.isEnabled = false
-        gameFragmentBinding.revealButton.isEnabled = false
-        gameFragmentBinding.guessButton.isEnabled = false
-        gameFragmentBinding.deleteButton.isEnabled = false
-        gameFragmentBinding.hintButton.isEnabled = false
-    }
-
-    private fun animateBrick(brick: ImageView) {
-        brick.startAnimation(
-            AnimationUtils.loadAnimation(
-                context, R.anim.slide_out_right
-            )
-        )
-        Handler().postDelayed({ brick.visibility = View.INVISIBLE }, 200)
-    }
-
-    private fun animateBartLinear(){
-
-        checkWhatMessageToDisplay()
-
-        if(totalGuesses == 9){
-            animateBrick(gameFragmentBinding.brickTenImageview)
-        }
-        if(totalGuesses == 8){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartchilling)})
-            animateBrick(gameFragmentBinding.brickNineImageview)
-        }
-        if(totalGuesses == 7){
-            animateBrick(gameFragmentBinding.brickEightImageview)
-        }
-        if(totalGuesses == 6){
-            animateBrick(gameFragmentBinding.brickSevenImageview)
-        }
-        if(totalGuesses == 5){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartjumping)})
-            animateBrick(gameFragmentBinding.brickSixImageview)
-        }
-        if(totalGuesses == 4){
-            animateBrick(gameFragmentBinding.brickFiveImageview)
-        }
-        if(totalGuesses == 3){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
-            animateBrick(gameFragmentBinding.brickFourImageview)
-        }
-        if(totalGuesses == 2){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
-            animateBrick(gameFragmentBinding.brickThreeImageview)
-        }
-        if(totalGuesses == 1){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartscared)})
-            animateBrick(gameFragmentBinding.brickTwoImageview)
-        }
-        if(totalGuesses == 0 && numberMatchCounter != 4){
-            gameFragmentBinding.personImageview.setImageDrawable(context?.let { getDrawable(it, R.drawable.bartfalling)})
-            animateBrick(gameFragmentBinding.brickOneImageview)
-
-            gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
-            gameFragmentBinding.brickOneImageview.visibility = View.INVISIBLE
-
-            gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
-            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.no_more_guesses_feedback)
-            gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
-            gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
-            gameFragmentBinding.userGuessEdittext.setText(combination)
-
-            val noMoreGuessesDialog = NoMoreGuessesDialog()
-            noMoreGuessesDialog.arguments = winningCombinationBundle
-            noMoreGuessesDialog.setTargetFragment(this, 1)
-            activity?.let { fragmentManager?.let { it -> noMoreGuessesDialog.show(it, "NoMoreGuessesDialog") } }
+            Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show()
             disableButtons()
         }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when(event?.action){
+        when (event?.action) {
 
-            MotionEvent.ACTION_DOWN -> v?.background = resources.getDrawable(R.drawable.pressed_rounded_button)
-            MotionEvent.ACTION_UP -> v?.background = resources.getDrawable(R.drawable.rounded_button_corners)
+            MotionEvent.ACTION_DOWN -> v?.background =
+                resources.getDrawable(R.drawable.pressed_rounded_button)
+            MotionEvent.ACTION_UP -> v?.background =
+                resources.getDrawable(R.drawable.rounded_button_corners)
         }
         return false
     }
 
-    private fun checkWhatMessageToDisplay() {
-        prevGuessesEnteredList.add(gameFragmentBinding.userGuessEdittext.text.toString())
-
-        matchCounter(combination, gameFragmentBinding.userGuessEdittext.text.toString())
-        rightsGuesses.add(numberMatchCounter)
-
-        prevGuessesAdapter.setData(prevGuessesEnteredList)
-        prevGuessesAdapter.setComboInfo(comboList)
-        prevGuessesAdapter.setCorrectItems(rightsGuesses)
-
-        when (numberMatchCounter) {
-            1 -> {
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.one_entry_correct)
-                gameFragmentBinding.userGuessEdittext.setText("")
-                numberMatchCounter = 0
-
-            }
-            2 -> {
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.two_entries_correct)
-                gameFragmentBinding.userGuessEdittext.setText("")
-                numberMatchCounter = 0
-
-            }
-            3 -> {
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.three_entries_correct)
-                gameFragmentBinding.userGuessEdittext.setText("")
-                numberMatchCounter = 0
-
-            }
-            4 -> { userWon() }
-            else -> {
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.incorrect)
-                gameFragmentBinding.userGuessEdittext.setText("")
-            }
-        }
-    }
-    private fun matchCounter(combo: String, entry: String): Int {
-        for (i in combo.indices) {
-            if (combo[i] == entry[i]) {
-                numberMatchCounter++
-            }
-        }
-        return numberMatchCounter
-    }
-
-    private fun revealCombination() {
-        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(context, R.style.RevealDialog)
-        alertDialog.setTitle("Reveal combination?")
-        alertDialog.setMessage("Completing this action will result in a loss!")
-        alertDialog.setPositiveButton("Confirm",
-            DialogInterface.OnClickListener { dialog, which ->
-                gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
-                gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.revealed_answer_feedback)
-                gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
-
-                gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
-                gameFragmentBinding.userGuessEdittext.setText(combination)
-
-                val userRevealedComboDialog = UserRevealedComboDialog()
-                userRevealedComboDialog.setTargetFragment(this, 1)
-                userRevealedComboDialog.arguments = winningCombinationBundle
-                activity?.let { fragmentManager?.let { it -> userRevealedComboDialog.show(it, "UserRevealedComboDialog") } }
-                disableButtons()
-
-                animateBrick(gameFragmentBinding.brickOneImageview)
-                animateBrick(gameFragmentBinding.brickTwoImageview)
-                animateBrick(gameFragmentBinding.brickThreeImageview)
-                animateBrick(gameFragmentBinding.brickFourImageview)
-                animateBrick(gameFragmentBinding.brickFiveImageview)
-                animateBrick(gameFragmentBinding.brickSixImageview)
-                animateBrick(gameFragmentBinding.brickSevenImageview)
-                animateBrick(gameFragmentBinding.brickEightImageview)
-                animateBrick(gameFragmentBinding.brickNineImageview)
-                animateBrick(gameFragmentBinding.brickTenImageview)
-
-
-                gameFragmentBinding.brickOneImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickTwoImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickThreeImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickFourImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickFiveImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickSixImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickSevenImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickEightImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickNineImageview.visibility = (View.INVISIBLE)
-                gameFragmentBinding.brickTenImageview.visibility = (View.INVISIBLE)
-
-                gameFragmentBinding.personImageview.setImageResource(R.drawable.bartfalling)
-
-                gameFragmentBinding.personImageview.startAnimation(
-                    AnimationUtils.loadAnimation(
-                        context, R.anim.exit_bottom))
-            })
-        alertDialog.setNegativeButton("No",
-            DialogInterface.OnClickListener { dialog, which -> })
-        alertDialog.show()
-    }
-
-    private fun userWon() {
-        disableButtons()
-
-        gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
-        gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_won_text)
-        gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
-        gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.userWonColor))
-        gameFragmentBinding.userGuessEdittext.setText(combination)
-
-        val userWonTheGameDialog = UserWonTheGameDialog()
-        userWonTheGameDialog.arguments = winningCombinationBundle
-        userWonTheGameDialog.setTargetFragment(this, 1)
-        activity?.let { fragmentManager?.let { it -> userWonTheGameDialog.show(it, "WinnerWinnerDialog") } }
-        disableButtons()
-        }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == 1){
+        if (resultCode == 1) {
             resetGame()
         }
     }
+
+    private fun startCountDown() {
+
+        countDownTimer = object : CountDownTimer(COUNTDOWN_TIMER_IN_MILLIS.toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                timeLeftInMillis = millisUntilFinished.toInt()
+                updateCountDownText()
+            }
+
+            override fun onFinish() {
+                timeLeftInMillis = 0
+                updateCountDownText()
+                userLostBecauseTimerRanOut()
+            }
+        }.start()
+    }
+    private fun updateCountDownText() {
+        val seconds = (timeLeftInMillis / 1000) % 60
+        val formattedTime = String.format(
+            Locale.getDefault(), "%02d:%02d",
+            (timeLeftInMillis / 1000 / 60), seconds
+        )
+        gameFragmentBinding.countdownTimerTextview.text = formattedTime
+        if (timeLeftInMillis < 15000) {
+            gameFragmentBinding.countdownTimerTextview.setTextColor(resources.getColor(R.color.lose_and_timer_running_out_color))
+        } else {
+            gameFragmentBinding.countdownTimerTextview.setTextColor(gameFragmentBinding.countdownTimerTextview.textColors)
+        }
+        if (totalGuesses == 0) {
+            countDownTimer.cancel()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if(countDownTimer != null){
+            countDownTimer.cancel()
+        }
+    }
 }
+
