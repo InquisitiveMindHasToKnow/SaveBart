@@ -64,7 +64,7 @@ class SplashScreenFragment : Fragment() {
                                 splashScreenFragmentBinding.splashEnterButton.background = resources.getDrawable(R.drawable.rounded_button_corners)
                                 splashScreenFragmentBinding.splashCheckmark.visibility =
                                     View.VISIBLE
-                            }, 500)
+                            }, 200)
                         }, 200)
                     }, 200)
                 }, 200)

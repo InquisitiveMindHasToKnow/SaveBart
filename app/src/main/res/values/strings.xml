@@ -26,6 +26,7 @@
     <string name="three_entries_correct"><font fgcolor="#F0810F">Three numbers and their locations correct.</font></string>
 
     <string name="you_lost_text"><font fgcolor="#F44336">You lost! Poor Bart!</font></string>
+    <string name="ran_out_of_time"><font fgcolor="#F44336">You ran out of time.</font></string>
     <string name="incorrect"><font fgcolor="#F44336">Incorrect.</font></string>
     <string name="correct"><font fgcolor="#5CB5B5">Correct!</font></string>
     <string name="you_won_text"><font fgcolor="#5CB5B5">You won! Bart is saved!</font></string>
