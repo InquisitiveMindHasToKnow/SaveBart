@@ -1,7 +1,6 @@
 package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -17,6 +16,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +40,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     private var numberMatchCounter = 0
     private var rightsGuesses = ArrayList<Int>()
 
-    val COUNTDOWN_TIMER_IN_MILLIS = 30000
+    val COUNTDOWN_TIMER_IN_MILLIS = 90000
     var timeLeftInMillis = 0
     lateinit var countDownTimer: CountDownTimer
 
@@ -185,6 +185,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
         totalGuesses = 10
         numberMatchCounter = 0
+        countDownTimer.cancel()
 
     }
 
@@ -217,7 +218,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
         checkWhatMessageToDisplay()
 
-        if (totalGuesses == 9) {
+        if (totalGuesses == 9 && numberMatchCounter != 4) {
             animateBrick(gameFragmentBinding.brickTenImageview)
         }
         if (totalGuesses == 8) {
@@ -292,10 +293,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             gameFragmentBinding.brickOneImageview.visibility = View.INVISIBLE
 
             gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
-            gameFragmentBinding.feedbackTextview.text =
-                resources.getText(R.string.no_more_guesses_feedback)
-            gameFragmentBinding.dispayHintsAndGameStatusTextview.text =
-                resources.getText(R.string.you_lost_text)
+            gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.no_more_guesses_feedback)
+            gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
             gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
             gameFragmentBinding.userGuessEdittext.setText(combination)
 
@@ -359,11 +358,15 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     }
 
     private fun revealCombination() {
-        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(context, R.style.RevealDialog)
+
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.RevealDialog)
         alertDialog.setTitle("Reveal combination?")
         alertDialog.setMessage("Completing this action will result in a loss!")
         alertDialog.setPositiveButton("Confirm",
             DialogInterface.OnClickListener { dialog, which ->
+
+                countDownTimer.cancel()
+
                 gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
                 gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.revealed_answer_feedback)
                 gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
@@ -423,6 +426,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.correct)
         gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.userWonColor))
         gameFragmentBinding.userGuessEdittext.setText(combination)
+
+        countDownTimer.cancel()
 
         val userWonTheGameDialog = UserWonTheGameDialog()
         userWonTheGameDialog.arguments = winningCombinationBundle
@@ -497,6 +502,9 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
                         gameFragmentBinding.seventhNumberTextview.text = eightNumbersToDisplay[4]
                         gameFragmentBinding.eighthNumberTextview.text = eightNumbersToDisplay[6]
 
+                        gameFragmentBinding.revealButton.isEnabled = true
+                        gameFragmentBinding.guessButton.isEnabled = true
+                        gameFragmentBinding.hintButton.isEnabled = true
                     }
                 }
             }
@@ -534,7 +542,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         gameFragmentBinding.personImageview.startAnimation(AnimationUtils.loadAnimation(context, R.anim.exit_bottom))
         gameFragmentBinding.feedbackTextview.text = resources.getText(R.string.ran_out_of_time)
         gameFragmentBinding.dispayHintsAndGameStatusTextview.text = resources.getText(R.string.you_lost_text)
-
+        gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
+        gameFragmentBinding.userGuessEdittext.setText(combination)
 
         val timerRanOutDialog = TimerRanOutDialog()
         timerRanOutDialog.arguments = winningCombinationBundle
@@ -552,9 +561,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             getRandomNumbers()
 
         } else {
-
             Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show()
-            disableButtons()
         }
     }
 
@@ -600,8 +607,9 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             (timeLeftInMillis / 1000 / 60), seconds
         )
         gameFragmentBinding.countdownTimerTextview.text = formattedTime
-        if (timeLeftInMillis < 15000) {
+        if (timeLeftInMillis < 30000) {
             gameFragmentBinding.countdownTimerTextview.setTextColor(resources.getColor(R.color.lose_and_timer_running_out_color))
+
         } else {
             gameFragmentBinding.countdownTimerTextview.setTextColor(gameFragmentBinding.countdownTimerTextview.textColors)
         }
