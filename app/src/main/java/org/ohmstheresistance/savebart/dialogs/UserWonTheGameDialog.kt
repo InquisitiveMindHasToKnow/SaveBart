@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.WinnerWinnerBinding
 
@@ -21,7 +22,7 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener, View.OnTouc
         return Dialog(requireActivity(), R.style.WideDialog)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater,
         @Nullable container: ViewGroup?,
@@ -39,6 +40,12 @@ class UserWonTheGameDialog : DialogFragment(), View.OnClickListener, View.OnTouc
         winnerWinnerBinding.winnerPlayAgainButton.setOnClickListener(this)
         winnerWinnerBinding.winnerConfirmButton.setOnTouchListener(this)
         winnerWinnerBinding.winnerPlayAgainButton.setOnTouchListener(this)
+
+            context?.let {
+                Glide.with(it)
+                    .load(resources.getDrawable(R.drawable.bartdancing))
+                    .into(winnerWinnerBinding.bartWinnerIcon)
+            }
 
         return winnerWinnerBinding.root
     }

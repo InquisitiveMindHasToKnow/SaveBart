@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.TimerRanOutDialogBinding
 
@@ -37,7 +38,18 @@ class TimerRanOutDialog : DialogFragment(), View.OnClickListener, View.OnTouchLi
         timerRanOutDialogBinding.timerRanOutConfirmButton.setOnClickListener(this)
         timerRanOutDialogBinding.timerRanOutPlayAgainButton.setOnTouchListener(this)
 
+        loadSadBartGif()
+
         return timerRanOutDialogBinding.root
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun loadSadBartGif(){
+        context?.let {
+            Glide.with(it)
+                .load(resources.getDrawable(R.drawable.bartcrying))
+                .into(timerRanOutDialogBinding.bartYouLostIcon)
+        }
     }
 
     private fun playAgain(){

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.NoMoreGuessesBinding
 
@@ -21,7 +22,7 @@ class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener, View.OnTouchL
         return Dialog(requireActivity(), R.style.WideDialog)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater,
         @Nullable container: ViewGroup?,
@@ -39,6 +40,11 @@ class NoMoreGuessesDialog: DialogFragment(), View.OnClickListener, View.OnTouchL
         noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnClickListener(this)
         noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnTouchListener(this)
         noMoreGuessesDialogBinding.noMoreGuessesPlayAgainButton.setOnTouchListener(this)
+
+        context?.let {
+            Glide.with(it)
+                .load(resources.getDrawable(R.drawable.bartcrying))
+                .into(noMoreGuessesDialogBinding.bartYouLostIcon)}
 
         return noMoreGuessesDialogBinding.root
     }
