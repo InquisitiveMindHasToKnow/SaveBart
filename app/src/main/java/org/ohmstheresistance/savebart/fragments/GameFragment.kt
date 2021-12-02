@@ -31,20 +31,27 @@ import kotlin.collections.ArrayList
 
 class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
-    lateinit var gameFragmentBinding: GameFragmentBinding
-    lateinit var countDownTimer: CountDownTimer
-    lateinit var combination: String
+    private lateinit var gameFragmentBinding: GameFragmentBinding
+    private lateinit var countDownTimer: CountDownTimer
+    private lateinit var combination: String
     private var totalGuesses = 10
     private var numberMatchCounter = 0
     private var timerIsRunning: Boolean = true
 
-    private val COUNTDOWN_TIMER_IN_MILLIS: Long = 40000
+    private val COUNTDOWN_TIMER_IN_MILLIS: Long = 60000
     private var timeLeftInMillis: Long = 0
 
     private var rightsGuesses = ArrayList<Int>()
     private var comboList = ArrayList<String>()
     private var prevGuessesEnteredList = ArrayList<String>()
-    val winningCombinationBundle = Bundle()
+    private val winningCombinationBundle = Bundle()
+
+    private var userWonTheGameDialog = UserWonTheGameDialog()
+    private var timerRanOutDialog = TimerRanOutDialog()
+    private var userLeftGame = UserLeftGameDialog()
+    private var userRevealedComboDialog = UserRevealedComboDialog()
+    private var noMoreGuessesDialog = NoMoreGuessesDialog()
+
 
     private lateinit var prevGuessesAdapter: PrevGuessesAdapter
 
@@ -312,7 +319,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
             gameFragmentBinding.userGuessEdittext.setText(combination)
 
-            val noMoreGuessesDialog = NoMoreGuessesDialog()
+            noMoreGuessesDialog = NoMoreGuessesDialog()
             noMoreGuessesDialog.arguments = winningCombinationBundle
             noMoreGuessesDialog.setTargetFragment(this, 1)
             activity?.let { fragmentManager?.let { it -> noMoreGuessesDialog.show(it, "NoMoreGuessesDialog") } }
@@ -388,7 +395,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
                 gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
                 gameFragmentBinding.userGuessEdittext.setText(combination)
 
-                val userRevealedComboDialog = UserRevealedComboDialog()
+                userRevealedComboDialog = UserRevealedComboDialog()
                 userRevealedComboDialog.setTargetFragment(this, 1)
                 userRevealedComboDialog.arguments = winningCombinationBundle
                 activity?.let {
@@ -442,7 +449,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
         countDownTimer.cancel()
 
-        val userWonTheGameDialog = UserWonTheGameDialog()
+        userWonTheGameDialog = UserWonTheGameDialog()
         userWonTheGameDialog.arguments = winningCombinationBundle
         userWonTheGameDialog.setTargetFragment(this, 1)
         activity?.let { fragmentManager?.let { it -> userWonTheGameDialog.show(it, "WinnerWinnerDialog") }
@@ -554,7 +561,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
         gameFragmentBinding.userGuessEdittext.setText(combination)
 
-        val timerRanOutDialog = TimerRanOutDialog()
+        timerRanOutDialog = TimerRanOutDialog()
         timerRanOutDialog.arguments = winningCombinationBundle
         timerRanOutDialog.setTargetFragment(this, 1)
         activity?.let { fragmentManager?.let { it -> timerRanOutDialog.show(it, "TimerRanOutDialog") }
@@ -607,7 +614,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             (timeLeftInMillis / 1000 / 60), seconds
         )
         gameFragmentBinding.countdownTimerTextview.text = formattedTime
-        if (timeLeftInMillis < 30000) {
+        if (timeLeftInMillis < 15000) {
             gameFragmentBinding.countdownTimerTextview.setTextColor(resources.getColor(R.color.lose_and_timer_running_out_color))
 
         } else {
@@ -631,9 +638,25 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     override fun onResume() {
         super.onResume()
 
+        if(userLeftGame.isVisible){
+            userLeftGame.dismiss()
+        }
+        if(userRevealedComboDialog.isVisible){
+            userRevealedComboDialog.dismiss()
+        }
+        if(userWonTheGameDialog.isVisible){
+            userWonTheGameDialog.dismiss()
+        }
+        if(noMoreGuessesDialog.isVisible){
+            noMoreGuessesDialog.dismiss()
+        }
+        if(timerRanOutDialog.isVisible){
+            timerRanOutDialog.dismiss()
+        }
+
         if (!timerIsRunning) {
 
-            val userLeftGame = UserLeftGameDialog()
+            userLeftGame = UserLeftGameDialog()
             userLeftGame.setTargetFragment(this, 1)
             userLeftGame.isCancelable = false
             userLeftGame.activity?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)

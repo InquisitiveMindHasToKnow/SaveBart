@@ -17,7 +17,7 @@ import org.ohmstheresistance.savebart.databinding.UserRevealedComboBinding
 
 class UserRevealedComboDialog: DialogFragment(), View.OnClickListener, View.OnTouchListener{
 
-    lateinit var userRevealedComboBinding: UserRevealedComboBinding
+    private lateinit var userRevealedComboBinding: UserRevealedComboBinding
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

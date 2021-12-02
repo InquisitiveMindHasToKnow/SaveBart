@@ -19,7 +19,8 @@ import org.ohmstheresistance.savebart.dialogs.SaveBartInstructions
 
 class LandingPageFragment : Fragment(), View.OnTouchListener{
 
-    lateinit var landingPageFragmentBinding: LandingPageFragmentBinding
+    private lateinit var landingPageFragmentBinding: LandingPageFragmentBinding
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
