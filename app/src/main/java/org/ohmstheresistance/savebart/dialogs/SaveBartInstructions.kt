@@ -23,9 +23,7 @@ class SaveBartInstructions: DialogFragment(), View.OnClickListener, View.OnTouch
         saveBartInstructionsBinding =   DataBindingUtil.inflate(inflater, R.layout.save_bart_instructions, container, false)
 
         saveBartInstructionsBinding.gotItButton.setOnClickListener(this)
-        saveBartInstructionsBinding.playNowFromInstructionsButton.setOnClickListener(this)
         saveBartInstructionsBinding.gotItButton.setOnTouchListener(this)
-        saveBartInstructionsBinding.playNowFromInstructionsButton.setOnTouchListener(this)
 
         return saveBartInstructionsBinding.root
     }
@@ -40,9 +38,6 @@ class SaveBartInstructions: DialogFragment(), View.OnClickListener, View.OnTouch
 
     override fun onClick(view: View?) {
         when(view?.id){
-
-            saveBartInstructionsBinding.playNowFromInstructionsButton.id -> {findNavController().navigate(LandingPageFragmentDirections.actionLandingPageFragmentToGameFragment())
-            dialog?.dismiss()}
 
             saveBartInstructionsBinding.gotItButton.id -> dialog?.dismiss()
         }

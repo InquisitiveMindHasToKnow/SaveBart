@@ -173,28 +173,14 @@
 
         <Button
             android:id="@+id/got_it_button"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:background="@drawable/rounded_button_corners"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="Got It!"
-            android:textAllCaps="false"
-            android:textColor="@color/hintColor"
-            />
-
-        <Button
-            android:id="@+id/play_now_from_instructions_button"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/rounded_button_corners"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="Play now"
             android:textAllCaps="false"
             android:textColor="@color/hintColor"
             />
