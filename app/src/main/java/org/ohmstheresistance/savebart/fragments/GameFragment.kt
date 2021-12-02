@@ -2,10 +2,8 @@ package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.*
@@ -40,11 +38,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     private var numberMatchCounter = 0
     private var timerIsRunning: Boolean = true
 
-
     private val COUNTDOWN_TIMER_IN_MILLIS: Long = 40000
     private var timeLeftInMillis: Long = 0
-    private var endTime: Long = 0
-    private var remainingTime: Long = 0
 
     private var rightsGuesses = ArrayList<Int>()
     private var comboList = ArrayList<String>()
@@ -61,10 +56,24 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         gameFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
 
-        initializeButtons()
-        checkInternetConnection()
+        if(connectedToInternet()) {
+            initializeButtons()
+            startCountDown()
+            getRandomNumbers()
 
+        }else{
+            if(countDownTimer != null){
+                countDownTimer.cancel()
+            }
+            Toast.makeText(context, "No internet connection. Please connect and try again.", Toast.LENGTH_SHORT).show()
+            disableButtons()
+        }
         return gameFragmentBinding.root
+    }
+    private fun connectedToInternet(): Boolean{
+        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)!!.state == NetworkInfo.State.CONNECTED
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -423,7 +432,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     }
 
     private fun userWon() {
-        disableButtons()
 
         gameFragmentBinding.combinationLinear.visibility = View.VISIBLE
         gameFragmentBinding.dispayHintsAndGameStatusTextview.text =
@@ -464,9 +472,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
 
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "not connected", Toast.LENGTH_SHORT).show()
-                }
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -555,19 +560,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         activity?.let { fragmentManager?.let { it -> timerRanOutDialog.show(it, "TimerRanOutDialog") }
         }
         disableButtons()
-    }
-
-    private fun checkInternetConnection() {
-        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val connectedToInternet = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
-                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)!!.state == NetworkInfo.State.CONNECTED
-        if (connectedToInternet) {
-            startCountDown()
-            getRandomNumbers()
-
-        } else {
-            Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show()
-        }
+        timerIsRunning = false
     }
 
     @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
@@ -642,6 +635,9 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
             val userLeftGame = UserLeftGameDialog()
             userLeftGame.setTargetFragment(this, 1)
+            userLeftGame.isCancelable = false
+            userLeftGame.activity?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
             activity?.let {
                 fragmentManager?.let { it -> userLeftGame.show(it, "UserLeftGame") }
             }
