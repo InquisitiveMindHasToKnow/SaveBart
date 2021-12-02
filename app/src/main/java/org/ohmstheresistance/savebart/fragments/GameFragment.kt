@@ -319,7 +319,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
             gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
             gameFragmentBinding.userGuessEdittext.setText(combination)
 
-            noMoreGuessesDialog = NoMoreGuessesDialog()
             noMoreGuessesDialog.arguments = winningCombinationBundle
             noMoreGuessesDialog.setTargetFragment(this, 1)
             activity?.let { fragmentManager?.let { it -> noMoreGuessesDialog.show(it, "NoMoreGuessesDialog") } }
@@ -395,7 +394,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
                 gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
                 gameFragmentBinding.userGuessEdittext.setText(combination)
 
-                userRevealedComboDialog = UserRevealedComboDialog()
                 userRevealedComboDialog.setTargetFragment(this, 1)
                 userRevealedComboDialog.arguments = winningCombinationBundle
                 activity?.let {
@@ -449,7 +447,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
         countDownTimer.cancel()
 
-        userWonTheGameDialog = UserWonTheGameDialog()
         userWonTheGameDialog.arguments = winningCombinationBundle
         userWonTheGameDialog.setTargetFragment(this, 1)
         activity?.let { fragmentManager?.let { it -> userWonTheGameDialog.show(it, "WinnerWinnerDialog") }
@@ -499,7 +496,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
                     winningCombinationBundle.putString("Combination", combination)
 
-                    val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7")
+                    val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "0", "1", "2", "3", "4", "5", "6", "7")
                     numbers.random()
 
                     val eightNumbersToDisplay = listOf(numbers[6], numbers[4], numbers[2], numbers[0], firstNumber, secondNumber, thirdNumber, fourthNumber)
@@ -561,7 +558,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         gameFragmentBinding.userGuessEdittext.setBackgroundColor(resources.getColor(R.color.low_guesses_color))
         gameFragmentBinding.userGuessEdittext.setText(combination)
 
-        timerRanOutDialog = TimerRanOutDialog()
         timerRanOutDialog.arguments = winningCombinationBundle
         timerRanOutDialog.setTargetFragment(this, 1)
         activity?.let { fragmentManager?.let { it -> timerRanOutDialog.show(it, "TimerRanOutDialog") }
@@ -638,31 +634,29 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
     override fun onResume() {
         super.onResume()
 
-        if(userLeftGame.isVisible){
-            userLeftGame.dismiss()
-        }
-        if(userRevealedComboDialog.isVisible){
-            userRevealedComboDialog.dismiss()
-        }
-        if(userWonTheGameDialog.isVisible){
-            userWonTheGameDialog.dismiss()
-        }
-        if(noMoreGuessesDialog.isVisible){
-            noMoreGuessesDialog.dismiss()
-        }
-        if(timerRanOutDialog.isVisible){
-            timerRanOutDialog.dismiss()
-        }
+        if (!timerIsRunning && !userLeftGame.isVisible) {
 
-        if (!timerIsRunning) {
-
-            userLeftGame = UserLeftGameDialog()
             userLeftGame.setTargetFragment(this, 1)
             userLeftGame.isCancelable = false
             userLeftGame.activity?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
             activity?.let {
                 fragmentManager?.let { it -> userLeftGame.show(it, "UserLeftGame") }
+            }
+            if(userLeftGame.isVisible){
+                userLeftGame.dismiss()
+            }
+            if(userRevealedComboDialog.isVisible){
+                userRevealedComboDialog.dismiss()
+            }
+            if(userWonTheGameDialog.isVisible){
+                userWonTheGameDialog.dismiss()
+            }
+            if(noMoreGuessesDialog.isVisible){
+                noMoreGuessesDialog.dismiss()
+            }
+            if(timerRanOutDialog.isVisible){
+                timerRanOutDialog.dismiss()
             }
         }
     }
