@@ -9,14 +9,12 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.databinding.SaveBartInstructionsBinding
-import org.ohmstheresistance.savebart.fragments.LandingPageFragmentDirections
 
 class SaveBartInstructions: DialogFragment(), View.OnClickListener, View.OnTouchListener {
 
-    lateinit var saveBartInstructionsBinding: SaveBartInstructionsBinding
+    private lateinit var saveBartInstructionsBinding: SaveBartInstructionsBinding
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
