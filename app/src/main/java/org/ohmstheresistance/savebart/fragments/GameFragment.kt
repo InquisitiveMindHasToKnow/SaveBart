@@ -2,8 +2,10 @@ package org.ohmstheresistance.savebart.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.*
@@ -25,25 +27,26 @@ import okio.IOException
 import org.ohmstheresistance.savebart.R
 import org.ohmstheresistance.savebart.adapters.PrevGuessesAdapter
 import org.ohmstheresistance.savebart.databinding.GameFragmentBinding
-import org.ohmstheresistance.savebart.dialogs.NoMoreGuessesDialog
-import org.ohmstheresistance.savebart.dialogs.TimerRanOutDialog
-import org.ohmstheresistance.savebart.dialogs.UserRevealedComboDialog
-import org.ohmstheresistance.savebart.dialogs.UserWonTheGameDialog
+import org.ohmstheresistance.savebart.dialogs.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
     lateinit var gameFragmentBinding: GameFragmentBinding
+    lateinit var countDownTimer: CountDownTimer
     lateinit var combination: String
     private var totalGuesses = 10
     private var numberMatchCounter = 0
+    private var timerIsRunning: Boolean = true
+
+
+    private val COUNTDOWN_TIMER_IN_MILLIS: Long = 40000
+    private var timeLeftInMillis: Long = 0
+    private var endTime: Long = 0
+    private var remainingTime: Long = 0
+
     private var rightsGuesses = ArrayList<Int>()
-
-    val COUNTDOWN_TIMER_IN_MILLIS = 90000
-    var timeLeftInMillis = 0
-    lateinit var countDownTimer: CountDownTimer
-
     private var comboList = ArrayList<String>()
     private var prevGuessesEnteredList = ArrayList<String>()
     val winningCombinationBundle = Bundle()
@@ -186,6 +189,8 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         totalGuesses = 10
         numberMatchCounter = 0
         countDownTimer.cancel()
+
+        startCountDown()
 
     }
 
@@ -490,7 +495,6 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
                     Handler(Looper.getMainLooper()).post {
 
-                        startCountDown()
                         gameFragmentBinding.combinationTextview.text = combination
 
                         gameFragmentBinding.firstNumberTextview.text = eightNumbersToDisplay[5]
@@ -558,6 +562,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         val connectedToInternet = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)!!.state == NetworkInfo.State.CONNECTED
         if (connectedToInternet) {
+            startCountDown()
             getRandomNumbers()
 
         } else {
@@ -587,19 +592,21 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
     private fun startCountDown() {
 
-        countDownTimer = object : CountDownTimer(COUNTDOWN_TIMER_IN_MILLIS.toLong(), 1000) {
+        countDownTimer = object : CountDownTimer(COUNTDOWN_TIMER_IN_MILLIS, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                timeLeftInMillis = millisUntilFinished.toInt()
+                timeLeftInMillis = millisUntilFinished
                 updateCountDownText()
             }
 
             override fun onFinish() {
+                timerIsRunning = false
                 timeLeftInMillis = 0
-                updateCountDownText()
                 userLostBecauseTimerRanOut()
             }
         }.start()
+       timerIsRunning = true
     }
+
     private fun updateCountDownText() {
         val seconds = (timeLeftInMillis / 1000) % 60
         val formattedTime = String.format(
@@ -618,12 +625,29 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
 
-        if(countDownTimer != null){
+        timerIsRunning = false
+
+        if (countDownTimer != null) {
             countDownTimer.cancel()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (!timerIsRunning) {
+
+            val userLeftGame = UserLeftGameDialog()
+            userLeftGame.setTargetFragment(this, 1)
+            activity?.let {
+                fragmentManager?.let { it -> userLeftGame.show(it, "UserLeftGame") }
+            }
+        }
+    }
 }
+
+
 

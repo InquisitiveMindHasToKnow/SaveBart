@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/layout/save_bart_instructions.xml" value="0.121875" />
         <entry key="app/src/main/res/layout/splash_screen_fragment.xml" value="0.10052083333333334" />
         <entry key="app/src/main/res/layout/timer_ran_out_dialog.xml" value="0.1078125" />
+        <entry key="app/src/main/res/layout/user_left_game.xml" value="0.11770833333333333" />
         <entry key="app/src/main/res/layout/user_revealed_combo.xml" value="0.1" />
         <entry key="app/src/main/res/layout/winner_winner.xml" value="0.1" />
       </map>
