@@ -496,13 +496,14 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
                     val eighthNumber = separatedResponse[7]
 
                     combination = firstNumber + thirdNumber + fifthNumber + seventhNumber
+
+                    val numbersToDisplay = arrayOf(firstNumber, secondNumber, thirdNumber, fourthNumber, fifthNumber, sixthNumber, seventhNumber, eighthNumber)
+                    numbersToDisplay.shuffle()
+
                     Log.d("Random Combo", combination)
                     comboList.add(combination)
 
                     winningCombinationBundle.putString("Combination", combination)
-
-                    val numbersToDisplay = arrayOf(firstNumber, secondNumber, thirdNumber, fourthNumber, fifthNumber, sixthNumber, seventhNumber, eighthNumber)
-                    numbersToDisplay.shuffle()
 
                     Handler(Looper.getMainLooper()).post {
 
