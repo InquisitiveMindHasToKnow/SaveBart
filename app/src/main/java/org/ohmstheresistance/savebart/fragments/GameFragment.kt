@@ -460,7 +460,7 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
         val baseOfNumbers = "10"
         val col = "1"
-        val num = "4"
+        val num = "8"
         val minNum = "0"
         val maxNum = "7"
         val format = "plain"
@@ -490,30 +490,32 @@ class GameFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
                     val secondNumber = separatedResponse[1]
                     val thirdNumber = separatedResponse[2]
                     val fourthNumber = separatedResponse[3]
+                    val fifthNumber = separatedResponse[4]
+                    val sixthNumber = separatedResponse[5]
+                    val seventhNumber = separatedResponse[6]
+                    val eighthNumber = separatedResponse[7]
 
-                    combination = firstNumber + secondNumber + thirdNumber + fourthNumber
+                    combination = firstNumber + thirdNumber + fifthNumber + seventhNumber
+                    Log.d("Random Combo", combination)
                     comboList.add(combination)
 
                     winningCombinationBundle.putString("Combination", combination)
 
-                    val numbers = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "0", "1", "2", "3", "4", "5", "6", "7")
-                    numbers.random()
-
-                    val eightNumbersToDisplay = listOf(numbers[6], numbers[4], numbers[2], numbers[0], firstNumber, secondNumber, thirdNumber, fourthNumber)
-                    eightNumbersToDisplay.random()
+                    val numbersToDisplay = arrayOf(firstNumber, secondNumber, thirdNumber, fourthNumber, fifthNumber, sixthNumber, seventhNumber, eighthNumber)
+                    numbersToDisplay.shuffle()
 
                     Handler(Looper.getMainLooper()).post {
 
                         gameFragmentBinding.combinationTextview.text = combination
 
-                        gameFragmentBinding.firstNumberTextview.text = eightNumbersToDisplay[5]
-                        gameFragmentBinding.secondNumberTextview.text = eightNumbersToDisplay[1]
-                        gameFragmentBinding.thirdNumberTextview.text = eightNumbersToDisplay[3]
-                        gameFragmentBinding.fourthNumberTextview.text = eightNumbersToDisplay[0]
-                        gameFragmentBinding.fifthNumberTextview.text = eightNumbersToDisplay[7]
-                        gameFragmentBinding.sixthNumberTextview.text = eightNumbersToDisplay[2]
-                        gameFragmentBinding.seventhNumberTextview.text = eightNumbersToDisplay[4]
-                        gameFragmentBinding.eighthNumberTextview.text = eightNumbersToDisplay[6]
+                        gameFragmentBinding.firstNumberTextview.text = numbersToDisplay[5]
+                        gameFragmentBinding.secondNumberTextview.text = numbersToDisplay[2]
+                        gameFragmentBinding.thirdNumberTextview.text = numbersToDisplay[3]
+                        gameFragmentBinding.fourthNumberTextview.text = numbersToDisplay[1]
+                        gameFragmentBinding.fifthNumberTextview.text = numbersToDisplay[7]
+                        gameFragmentBinding.sixthNumberTextview.text = numbersToDisplay[0]
+                        gameFragmentBinding.seventhNumberTextview.text = numbersToDisplay[4]
+                        gameFragmentBinding.eighthNumberTextview.text = numbersToDisplay[6]
 
                         gameFragmentBinding.revealButton.isEnabled = true
                         gameFragmentBinding.guessButton.isEnabled = true
